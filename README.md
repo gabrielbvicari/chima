@@ -25,11 +25,14 @@ A complete Arch Linux + Hyprland + QuickShell distribution with automated instal
 ### Installation
 
 ```bash
-# Clone the repository
+bash <(curl -s https://raw.githubusercontent.com/gabrielbvicari/chima/main/install.sh)
+```
+
+Or manually:
+
+```bash
 git clone https://github.com/gabrielbvicari/chima.git
 cd chima
-
-# Run the installation
 ./setup
 ```
 
