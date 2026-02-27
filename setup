@@ -26,7 +26,7 @@ show_welcome() {
     clear
     local term_width=$(get_terminal_width)
 
-    local logo_width=81
+    local logo_width=51
     local padding=0
     if [[ $term_width -gt $logo_width ]]; then
         padding=$(( (term_width - logo_width) / 2 ))
@@ -39,26 +39,29 @@ show_welcome() {
         echo -e "${GOLD}$1${NC}"
     }
 
-    print_logo_line "╔═══════════════════════════════════════════════════════════════════════════════╗"
-    print_logo_line "║                                                                               ║"
-    print_logo_line "║        ██╗██╗     ██╗      ██████╗  ██████╗ ██╗ ██████╗ █████╗ ██╗            ║"
-    print_logo_line "║        ██║██║     ██║     ██╔═══██╗██╔════╝ ██║██╔════╝██╔══██╗██║            ║"
-    print_logo_line "║        ██║██║     ██║     ██║   ██║██║  ███╗██║██║     ███████║██║            ║"
-    print_logo_line "║        ██║██║     ██║     ██║   ██║██║   ██║██║██║     ██╔══██║██║            ║"
-    print_logo_line "║        ██║███████╗███████╗╚██████╔╝╚██████╔╝██║╚██████╗██║  ██║███████╗       ║"
-    print_logo_line "║        ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝       ║"
-    print_logo_line "║                                                                               ║"
-    print_logo_line "║            ██╗███╗   ███╗██████╗ ██╗   ██╗██╗     ███████╗███████╗            ║"
-    print_logo_line "║            ██║████╗ ████║██╔══██╗██║   ██║██║     ██╔════╝██╔════╝            ║"
-    print_logo_line "║            ██║██╔████╔██║██████╔╝██║   ██║██║     ███████╗█████╗              ║"
-    print_logo_line "║            ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██║     ╚════██║██╔══╝              ║"
-    print_logo_line "║            ██║██║ ╚═╝ ██║██║     ╚██████╔╝███████╗███████║███████╗            ║"
-    print_logo_line "║            ╚═╝╚═╝     ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝            ║"
-    print_logo_line "║                                                                               ║"
-    print_logo_line "║                              Arch Linux Installer                             ║"
-    print_logo_line "║                                 Version 1.0.0                                 ║"
-    print_logo_line "║                                                                               ║"
-    print_logo_line "╚═══════════════════════════════════════════════════════════════════════════════╝"
+    echo ""
+    print_logo_line " ██████ ██   ██ ██ ███    ███  █████ "
+    print_logo_line "██      ██   ██ ██ ████  ████ ██   ██"
+    print_logo_line "██      ███████ ██ ██ ████ ██ ███████"
+    print_logo_line "██      ██   ██ ██ ██  ██  ██ ██   ██"
+    print_logo_line " ██████ ██   ██ ██ ██      ██ ██   ██"
+    echo ""
+
+    local subtitle="Arch Linux Installer"
+    local sub_padding=0
+    if [[ $term_width -gt ${#subtitle} ]]; then
+        sub_padding=$(( (term_width - ${#subtitle}) / 2 ))
+    fi
+    printf "%${sub_padding}s" ""
+    echo -e "${CYAN}${subtitle}${NC}"
+
+    local version="Version 1.0.0"
+    local ver_padding=0
+    if [[ $term_width -gt ${#version} ]]; then
+        ver_padding=$(( (term_width - ${#version}) / 2 ))
+    fi
+    printf "%${ver_padding}s" ""
+    echo -e "${CYAN}${version}${NC}"
     echo ""
 
     echo -e "${CYAN}This script will install and configure a complete Hyprland environment.${NC}"
