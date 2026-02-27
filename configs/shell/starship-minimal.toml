@@ -1,0 +1,480 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[ ](bg:#101010 fg:#707070)\
+$os\
+[](bg:#101010 fg:#707070)\
+$directory\
+$git_branch\
+$git_status\
+[](#101010)\
+$fill\
+[](#101010)\
+$status\
+$cmd_duration\
+[](bg:#101010 fg:#707070)\
+$sudo\
+$localip\
+$time\
+[ ](bg:#101010 fg:#567676)\
+"""
+
+[os]
+style = "bg:#101010 fg:#c7c7c7"
+disabled = false
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = "  "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
+
+[cmd_duration]
+min_time = 1
+style = 'bg:#101010 fg:#707070'
+format = '[ [$duration](bold bg:#101010 fg:#707070)  ]($style)'
+
+[status]
+style = 'bg:#101010'
+symbol = '[✘](bg:#101010 fg:red)'
+success_symbol = '[✔ ](bg:#101010 fg:green)'
+format = '[[$signal_name](bg:#101010 fg:red) $symbol ]($style)'
+map_symbol = false
+disabled = false
+
+[sudo]
+symbol = ""
+style = 'bg:#101010 fg:#707070'
+format = '[ $symbol ]($style)'
+disabled = false
+
+[character]
+style = 'bg:#101010'
+success_symbol = '[✔](bg:#101010 fg:green)'
+error_symbol = '[✘](bg:#101010 fg:red)'
+format = '[[$signal_name](bg:#101010 fg:red) $symbol  ]($style)'
+map_symbol = false
+disabled = true
+
+[username]
+show_always = true
+style_user = " bg:#101010 fg:#c7c7c7"
+style_root = "bg:#101010 fg:#c7c7c7"
+format = '[ $user]($style)'
+disabled = false
+
+[hostname]
+ssh_only = false
+style = 'bg:#101010 fg:#c7c7c7'
+format = '[@$hostname]($style)'
+disabled = false
+
+[localip]
+ssh_only = true
+style = 'bg:#101010 fg:#707070'
+format = '[:$localipv4]($style)'
+disabled = false
+
+[time]
+disabled = false
+time_format = "%T"
+style = "bg:#101010 fg:#567676"
+format = '[ $time ]($style)'
+
+[directory]
+style = "bg:#101010 fg:#0a96d6"
+format = "[   $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+fish_style_pwd_dir_length = 1
+home_symbol = '~'
+
+[directory.substitutions]
+"~" = "  ~"
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"MantisAI" = "󰲋 "
+
+[fill]
+symbol = ' '
+
+[git_branch]
+style = "bg:#101010 fg:#56b60a"
+format = '[](bg:#101010 fg:#707070)[  ](bg:#101010 fg:#56b60a)[ $branch](bold $style)'
+truncation_length = 10
+truncation_symbol = "…"
+
+[git_status]
+style = "bg:#101010 fg:#0a96d6"
+conflicted = "~ "
+up_to_date = " "
+untracked = "? "
+ahead = "⇡${count} "
+diverged = "⇕⇡${ahead_count}⇣${behind_count} "
+behind = "⇣${count} "
+stashed = "* "
+modified = " "
+staged = '[++\($count\) ](bg:#101010 fg:#56b60a)'
+renamed = " "
+deleted = " "
+format = '[ $all_status$ahead_behind]($style)'
+
+[aws]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($profile) (\($region\) )]($style)'
+
+[azure]
+symbol = "󰠅 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($subscription) ]($style)'
+
+[buf]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[bun]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[c]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[cmake]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[cobol]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[conda]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
+
+[container]
+symbol = "⬢ "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($name) ]($style)'
+
+[crystal]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[daml]
+symbol = "Λ "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[dart]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[deno]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[docker_context]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($context) ]($style)'
+
+[dotnet]
+symbol = "󰪮 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version)($tfm) ]($style)'
+
+[elixir]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\(OTP $otp_version\) )]($style)'
+
+[elm]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[erlang]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[fennel]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[gcloud]
+symbol = "󱇶 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($account)(@$domain) ]($style)'
+
+[gleam]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[golang]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[guix_shell]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($style) ]($style)'
+
+[gradle]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[haskell]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[haxe]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[helm]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[java]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[julia]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[kotlin]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[kubernetes]
+symbol = "☸ "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($context) (\($namespace\) )]($style)'
+
+[lua]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[meson]
+symbol = "󰔷 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
+
+[mojo]
+symbol = "󰈸 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
+
+[nim]
+symbol = "󰆥 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[nix_shell]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($state) (\($name\) )]($style)'
+
+[nodejs]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[ocaml]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\($switch_indicator$switch_name\) )]($style)'
+
+[odin]
+symbol = "Ø "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[opa]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[openstack]
+symbol = "☁️ "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($cloud) (\($project\) )]($style)'
+
+[package]
+symbol = "󰏗 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[perl]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[php]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[pulumi]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($stack) ]($style)'
+
+[purescript]
+symbol = "<=> "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[python]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ ${symbol}${pyenv_prefix}($version) (\($virtualenv\) )]($style)'
+
+[quarto]
+symbol = "⨁ "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[rlang]
+symbol = "󰟔 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[raku]
+symbol = "󱖊 "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
+
+[red]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[ruby]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[rust]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[scala]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[solidity]
+symbol = 'S '
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[spack]
+symbol = '🅢 '
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
+
+[swift]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[terraform]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($workspace) ]($style)'
+
+[typst]
+symbol = "t "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
+
+[vagrant]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[vlang]
+symbol = 'V '
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+[zig]
+symbol = " "
+style = "bg:#101010 fg:#c7c7c7"
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+
+
+[line_break]
+disabled = false
+
+continuation_prompt = '▶▶ '

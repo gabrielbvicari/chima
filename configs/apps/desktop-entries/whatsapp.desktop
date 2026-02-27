@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=WhatsApp
+Comment=WhatsApp Web
+Exec=$HOME/.local/share/applications/WhatsApp-linux-x64/WhatsApp --disable-gpu --disable-gpu-sandbox --no-sandbox --disable-dev-shm-usage --disable-software-rasterizer --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-features=TranslateUI
+Icon=$HOME/.local/share/applications/WhatsApp-linux-x64/resources/app/icon.png
+Type=Application
+StartupNotify=true
+Categories=Network;InstantMessaging;
+StartupWMClass=WhatsApp

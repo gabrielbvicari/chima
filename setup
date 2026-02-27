@@ -1,0 +1,1203 @@
+#!/bin/bash
+# Chima - Arch Linux Installation Script.
+# Post-installation setup script for a complete Hyprland environment.
+
+# Get script directory:
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source libraries:
+source "$SCRIPT_DIR/lib/colors.sh"
+source "$SCRIPT_DIR/lib/functions.sh"
+source "$SCRIPT_DIR/lib/packages.sh"
+
+INSTALL_SUMMARY=()
+INSTALL_OFFICIAL=true
+INSTALL_AUR=true
+INSTALL_CONFIGS=true
+INSTALL_OPTIONAL=false
+INSTALL_GCLOUD=false
+INSTALL_PCLOUD=false
+INSTALL_CLAUDE=false
+INSTALL_GITHUB=false
+INSTALL_FLATPAK=true
+INSTALL_NPM=true
+
+show_welcome() {
+    clear
+    local term_width=$(get_terminal_width)
+
+    local logo_width=81
+    local padding=0
+    if [[ $term_width -gt $logo_width ]]; then
+        padding=$(( (term_width - logo_width) / 2 ))
+    fi
+
+    print_logo_line() {
+        if [[ $padding -gt 0 ]]; then
+            printf "%${padding}s" ""
+        fi
+        echo -e "${GOLD}$1${NC}"
+    }
+
+    print_logo_line "╔═══════════════════════════════════════════════════════════════════════════════╗"
+    print_logo_line "║                                                                               ║"
+    print_logo_line "║        ██╗██╗     ██╗      ██████╗  ██████╗ ██╗ ██████╗ █████╗ ██╗            ║"
+    print_logo_line "║        ██║██║     ██║     ██╔═══██╗██╔════╝ ██║██╔════╝██╔══██╗██║            ║"
+    print_logo_line "║        ██║██║     ██║     ██║   ██║██║  ███╗██║██║     ███████║██║            ║"
+    print_logo_line "║        ██║██║     ██║     ██║   ██║██║   ██║██║██║     ██╔══██║██║            ║"
+    print_logo_line "║        ██║███████╗███████╗╚██████╔╝╚██████╔╝██║╚██████╗██║  ██║███████╗       ║"
+    print_logo_line "║        ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝       ║"
+    print_logo_line "║                                                                               ║"
+    print_logo_line "║            ██╗███╗   ███╗██████╗ ██╗   ██╗██╗     ███████╗███████╗            ║"
+    print_logo_line "║            ██║████╗ ████║██╔══██╗██║   ██║██║     ██╔════╝██╔════╝            ║"
+    print_logo_line "║            ██║██╔████╔██║██████╔╝██║   ██║██║     ███████╗█████╗              ║"
+    print_logo_line "║            ██║██║╚██╔╝██║██╔═══╝ ██║   ██║██║     ╚════██║██╔══╝              ║"
+    print_logo_line "║            ██║██║ ╚═╝ ██║██║     ╚██████╔╝███████╗███████║███████╗            ║"
+    print_logo_line "║            ╚═╝╚═╝     ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝╚══════╝            ║"
+    print_logo_line "║                                                                               ║"
+    print_logo_line "║                              Arch Linux Installer                             ║"
+    print_logo_line "║                                 Version 1.0.0                                 ║"
+    print_logo_line "║                                                                               ║"
+    print_logo_line "╚═══════════════════════════════════════════════════════════════════════════════╝"
+    echo ""
+
+    echo -e "${CYAN}This script will install and configure a complete Hyprland environment.${NC}"
+    echo -e "${CYAN}It includes:${NC}"
+    echo -e "  ${GOLD}*${NC} Hyprland Window Manager and utilities"
+    echo -e "  ${GOLD}*${NC} Quickshell widgets and customizations"
+    echo -e "  ${GOLD}*${NC} SDDM Display Manager for graphical logins"
+    echo -e "  ${GOLD}*${NC} Development tools and applications"
+    echo -e "  ${GOLD}*${NC} Custom GRUB theme and bootloader setup"
+    echo -e "  ${GOLD}*${NC} Custom themes and fonts"
+    echo -e "  ${GOLD}*${NC} Custom system configurations and dotfiles"
+    echo ""
+
+    echo -e "This script is designed to run after an Arch Linux basic installation."
+    echo -e "Estimated installation time: 30-60 minutes."
+
+    if ! confirm_action "Start installation?" "y"; then
+        print_error "Installation cancelled."
+        exit 0
+    fi
+}
+
+perform_system_checks() {
+    clear_screen
+    print_section "SYSTEM CHECKS"
+
+    print_step "Checking operating system..."
+    check_arch_linux
+    print_success "Arch Linux installation detected."
+
+    print_step "Testing internet connectivity..."
+    check_internet
+
+    print_step "Checking available disk space..."
+    check_disk_space 10
+
+    print_success "System check was successfull."
+    sleep 5
+    INSTALL_SUMMARY+=("System check was successfull.")
+}
+
+select_installation_mode() {
+    local options=(
+        "Full Installation"
+        "Minimal Installation"
+        "Custom Installation"
+    )
+
+    show_menu "Select installation mode:" "${options[@]}"
+    local choice=$?
+
+    case $choice in
+        0) # Full Installation
+            INSTALL_CLAUDE=true
+            INSTALL_GITHUB=true
+            INSTALL_GCLOUD=true
+            INSTALL_PCLOUD=true
+            INSTALL_OPTIONAL=true
+            print_success "Full installation selected."
+            ;;
+        1) # Minimal Installation
+            INSTALL_CLAUDE=false
+            INSTALL_GITHUB=false
+            INSTALL_GCLOUD=false
+            INSTALL_PCLOUD=false
+            INSTALL_OPTIONAL=false
+            print_success "Minimal installation selected."
+            ;;
+        2) # Custom Installation
+            select_optional_packages
+            print_success "Custom installation configured."
+            ;;
+    esac
+
+    INSTALL_SUMMARY+=("Installation mode configured.")
+}
+
+select_optional_packages() {
+    local options=(
+        "Claude Code"
+        "GitHub CLI"
+        "Google Cloud CLI"
+        "pCloud Drive"
+    )
+
+    local selected=$(show_multiselect "Select optional packages to install:" "${options[@]}")
+
+    if [[ -n "$selected" ]]; then
+        IFS=',' read -ra INDICES <<< "$selected" || true
+        for idx in "${INDICES[@]}"; do
+            case $idx in
+                0) INSTALL_CLAUDE=true ;;
+                1) INSTALL_GITHUB=true ;;
+                2) INSTALL_GCLOUD=true ;;
+                3) INSTALL_PCLOUD=true ;;
+            esac
+        done
+        INSTALL_OPTIONAL=true
+        INSTALL_SUMMARY+=("Optional packages configured.")
+    else
+        print_info "No optional packages selected."
+    fi
+}
+
+update_system() {
+    clear_screen
+    print_section "SYSTEM UPDATE"
+
+    print_info "Refreshing package databases and upgrading system packages..."
+    print_step "Running pacman -Syu..."
+    if sudo pacman -Syu --noconfirm; then
+        print_success "System updated successfully."
+        INSTALL_SUMMARY+=("System was updated.")
+    else
+        print_warning "System update had issues, continuing..."
+    fi
+    echo ""
+}
+
+install_yay() {
+    if command_exists yay; then
+        print_success "Yay is already installed"
+        return 0
+    fi
+
+    print_section "INSTALLING YAY AUR HELPER"
+
+    print_info "Yay is required to install AUR packages"
+
+    print_step "Installing yay dependencies (git, base-devel)..."
+    sudo pacman -S --noconfirm --needed git base-devel
+    print_success "Dependencies installed"
+
+    print_step "Cloning yay repository from AUR..."
+    local tmp_dir="/tmp/yay-install-$$"
+    git clone https://aur.archlinux.org/yay-bin.git "$tmp_dir"
+    print_success "Repository cloned"
+
+    print_step "Building and installing yay (this may take a moment)..."
+    cd "$tmp_dir"
+    makepkg -si --noconfirm
+
+    cd "$SCRIPT_DIR"
+    rm -rf "$tmp_dir"
+
+    if command_exists yay; then
+        echo ""
+        print_success "Yay AUR helper installed successfully!"
+        INSTALL_SUMMARY+=("Yay AUR helper installed")
+        return 0
+    else
+        print_error "Failed to install yay"
+        return 1
+    fi
+}
+
+# ====================================================================
+# PACKAGE INSTALLATION
+# ====================================================================
+
+install_official_packages() {
+    if [[ "$INSTALL_OFFICIAL" != true ]]; then
+        return 0
+    fi
+
+    print_section "INSTALLING OFFICIAL PACKAGES"
+
+    install_packages_with_progress ALL_OFFICIAL_PACKAGES "pacman"
+
+    INSTALL_SUMMARY+=("Official packages installed")
+}
+
+install_aur_packages() {
+    if [[ "$INSTALL_AUR" != true ]]; then
+        return 0
+    fi
+
+    print_section "INSTALLING AUR PACKAGES"
+
+    # Ensure yay is installed
+    if ! command_exists yay; then
+        install_yay || return 1
+    fi
+
+    install_packages_with_progress ALL_AUR_PACKAGES "yay"
+
+    INSTALL_SUMMARY+=("AUR packages installed")
+}
+
+install_optional_packages_handler() {
+    if [[ "$INSTALL_OPTIONAL" != true ]]; then
+        return 0
+    fi
+
+    print_section "INSTALLING OPTIONAL PACKAGES"
+
+    if [[ "$INSTALL_GITHUB" == true ]]; then
+        print_info "Installing GitHub CLI..."
+        install_packages_with_progress OPTIONAL_GITHUB_PACKAGES "pacman"
+    fi
+
+    if [[ "$INSTALL_GCLOUD" == true ]]; then
+        print_info "Installing Google Cloud CLI packages..."
+        install_packages_with_progress AUR_OPTIONAL_GCLOUD_PACKAGES "yay"
+    fi
+
+    if [[ "$INSTALL_PCLOUD" == true ]]; then
+        print_info "Installing pCloud Drive..."
+        install_packages_with_progress AUR_OPTIONAL_PCLOUD_PACKAGES "yay"
+    fi
+
+    if [[ "$INSTALL_CLAUDE" == true ]]; then
+        print_info "Installing Claude Code..."
+        if command_exists npm; then
+            sudo npm install -g "${NPM_OPTIONAL_CLAUDE_PACKAGES[@]}"
+            print_success "Claude Code installed"
+        else
+            print_warning "npm not found, skipping Claude Code installation"
+        fi
+    fi
+
+    INSTALL_SUMMARY+=("Optional packages installed")
+}
+
+install_flatpak_packages() {
+    if [[ "$INSTALL_FLATPAK" != true ]]; then
+        return 0
+    fi
+
+    print_section "INSTALLING FLATPAK PACKAGES"
+
+    print_step "Adding Flathub repository..."
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    local total=${#FLATPAK_PACKAGES[@]}
+    local current=0
+
+    for pkg in "${FLATPAK_PACKAGES[@]}"; do
+        ((current++))
+        echo -e "${CYAN}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
+        flatpak install -y flathub "$pkg"
+        show_progress "$current" "$total"
+        echo ""
+    done
+
+    print_success "Flatpak packages installed"
+    INSTALL_SUMMARY+=("Flatpak packages installed")
+}
+
+install_npm_packages() {
+    if [[ "$INSTALL_NPM" != true ]]; then
+        return 0
+    fi
+
+    print_section "INSTALLING NPM GLOBAL PACKAGES"
+
+    # Reload shell hash table to recognize newly installed npm
+    hash -r
+
+    if ! command_exists npm; then
+        print_warning "npm not found, skipping npm package installation"
+        return 0
+    fi
+
+    local total=${#NPM_PACKAGES[@]}
+    local current=0
+
+    for pkg in "${NPM_PACKAGES[@]}"; do
+        ((current++))
+        echo -e "${CYAN}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
+        sudo npm install -g "$pkg"
+        show_progress "$current" "$total"
+        echo ""
+    done
+
+    print_success "NPM packages installed"
+    INSTALL_SUMMARY+=("NPM global packages installed")
+}
+
+# ====================================================================
+# CONFIGURATION DEPLOYMENT
+# ====================================================================
+
+restore_wm_configs() {
+    print_section "RESTORING WINDOW MANAGER CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # QuickShell
+    if [ -d "$SCRIPT_DIR/configs/wm/quickshell/chima" ]; then
+        print_step "Restoring QuickShell configuration..."
+        ensure_directory "$config_dir/quickshell"
+        cp -r "$SCRIPT_DIR/configs/wm/quickshell/chima" "$config_dir/quickshell/"
+        print_success "QuickShell configuration restored"
+    fi
+
+    # Hyprland
+    if [ -d "$SCRIPT_DIR/configs/wm/hyprland/hypr" ]; then
+        print_step "Restoring Hyprland configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/wm/hyprland/hypr" "$config_dir/"
+        print_success "Hyprland configuration restored"
+    fi
+
+    # QuickShell user preferences (config.json + wallpaper)
+    if [ -d "$SCRIPT_DIR/configs/wm/chima" ]; then
+        print_step "Restoring QuickShell user preferences..."
+        ensure_directory "$config_dir/chima"
+        cp -r "$SCRIPT_DIR/configs/wm/chima"/* "$config_dir/chima/"
+        print_success "QuickShell user preferences restored (monochrome setting + wallpaper)"
+    fi
+}
+
+restore_editor_configs() {
+    print_section "RESTORING EDITOR CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # Neovim
+    if [ -d "$SCRIPT_DIR/configs/editors/nvim/nvim" ]; then
+        print_step "Restoring Neovim configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/editors/nvim/nvim" "$config_dir/"
+        print_success "Neovim configuration restored"
+    fi
+
+    # VS Code
+    if [ -d "$SCRIPT_DIR/configs/editors/Code" ]; then
+        print_step "Restoring VS Code configuration..."
+        ensure_directory "$config_dir/Code/User"
+        [ -f "$SCRIPT_DIR/configs/editors/Code/settings.json" ] && cp "$SCRIPT_DIR/configs/editors/Code/settings.json" "$config_dir/Code/User/"
+        [ -f "$SCRIPT_DIR/configs/editors/Code/keybindings.json" ] && cp "$SCRIPT_DIR/configs/editors/Code/keybindings.json" "$config_dir/Code/User/"
+
+        # Install extensions
+        if [ -f "$SCRIPT_DIR/configs/editors/Code/extensions.txt" ]; then
+            print_step "Installing VS Code extensions..."
+            while IFS= read -r ext; do
+                code --install-extension "$ext" &> /dev/null && print_info "  Installed: $ext"
+            done < "$SCRIPT_DIR/configs/editors/Code/extensions.txt"
+        fi
+
+        print_success "VS Code configuration restored"
+    fi
+}
+
+restore_shell_configs() {
+    print_section "RESTORING SHELL CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # Fish
+    if [ -d "$SCRIPT_DIR/configs/shell/fish/fish" ]; then
+        print_step "Restoring Fish shell configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/shell/fish/fish" "$config_dir/"
+        print_success "Fish configuration restored"
+    fi
+
+    # Starship
+    [ -f "$SCRIPT_DIR/configs/shell/starship.toml" ] && cp "$SCRIPT_DIR/configs/shell/starship.toml" "$config_dir/" && print_success "Starship config restored"
+    [ -f "$SCRIPT_DIR/configs/shell/starship-minimal.toml" ] && cp "$SCRIPT_DIR/configs/shell/starship-minimal.toml" "$config_dir/" && print_success "Starship minimal config restored"
+}
+
+restore_terminal_configs() {
+    print_section "RESTORING TERMINAL EMULATOR CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # Ghostty
+    if [ -d "$SCRIPT_DIR/configs/terminal/ghostty/ghostty" ]; then
+        print_step "Restoring Ghostty configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/terminal/ghostty/ghostty" "$config_dir/"
+        print_success "Ghostty configuration restored"
+    fi
+
+    # Kitty
+    if [ -d "$SCRIPT_DIR/configs/terminal/kitty/kitty" ]; then
+        print_step "Restoring Kitty configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/terminal/kitty/kitty" "$config_dir/"
+        print_success "Kitty configuration restored"
+    fi
+}
+
+restore_dev_configs() {
+    print_section "RESTORING DEVELOPMENT TOOL CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # Lazygit
+    if [ -d "$SCRIPT_DIR/configs/dev/lazygit/lazygit" ]; then
+        print_step "Restoring Lazygit configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/dev/lazygit/lazygit" "$config_dir/"
+        print_success "Lazygit configuration restored"
+    fi
+
+    # Lazydocker
+    if [ -d "$SCRIPT_DIR/configs/dev/lazydocker/lazydocker" ]; then
+        print_step "Restoring Lazydocker configuration..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/dev/lazydocker/lazydocker" "$config_dir/"
+        print_success "Lazydocker configuration restored"
+    fi
+
+    # Linters
+    if [ -d "$SCRIPT_DIR/configs/dev/linters" ]; then
+        print_step "Restoring linter configurations..."
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.eslintrc.js" ] && cp "$SCRIPT_DIR/configs/dev/linters/.eslintrc.js" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.eslintrc.json" ] && cp "$SCRIPT_DIR/configs/dev/linters/.eslintrc.json" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.luacheckrc" ] && cp "$SCRIPT_DIR/configs/dev/linters/.luacheckrc" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.golangci.yml" ] && cp "$SCRIPT_DIR/configs/dev/linters/.golangci.yml" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.mypy.ini" ] && cp "$SCRIPT_DIR/configs/dev/linters/.mypy.ini" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.pylintrc" ] && cp "$SCRIPT_DIR/configs/dev/linters/.pylintrc" "$home_dir/"
+        [ -f "$SCRIPT_DIR/configs/dev/linters/.yamllint.yml" ] && cp "$SCRIPT_DIR/configs/dev/linters/.yamllint.yml" "$home_dir/"
+        print_success "Linter configurations restored"
+    fi
+
+    # Docker
+    if [ -d "$SCRIPT_DIR/configs/dev/docker" ]; then
+        print_step "Restoring Docker configuration..."
+        ensure_directory "$home_dir/.docker"
+        [ -f "$SCRIPT_DIR/configs/dev/docker/config.json" ] && cp "$SCRIPT_DIR/configs/dev/docker/config.json" "$home_dir/.docker/"
+        [ -f "$SCRIPT_DIR/configs/dev/docker/daemon.json" ] && sudo cp "$SCRIPT_DIR/configs/dev/docker/daemon.json" /etc/docker/ 2>/dev/null
+        print_success "Docker configuration restored"
+    fi
+}
+
+restore_app_configs() {
+    print_section "RESTORING APPLICATION CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # System monitors
+    [ -d "$SCRIPT_DIR/configs/apps/btop" ] && cp -r "$SCRIPT_DIR/configs/apps/btop" "$config_dir/" && print_success "btop config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/fastfetch" ] && cp -r "$SCRIPT_DIR/configs/apps/fastfetch" "$config_dir/" && print_success "fastfetch config restored"
+
+    # Audio/Video
+    [ -d "$SCRIPT_DIR/configs/apps/cava" ] && cp -r "$SCRIPT_DIR/configs/apps/cava" "$config_dir/" && print_success "cava config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/mpv" ] && cp -r "$SCRIPT_DIR/configs/apps/mpv" "$config_dir/" && print_success "mpv config restored"
+
+    # Utilities
+    [ -d "$SCRIPT_DIR/configs/apps/dunst" ] && cp -r "$SCRIPT_DIR/configs/apps/dunst" "$config_dir/" && print_success "dunst config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/fuzzel" ] && cp -r "$SCRIPT_DIR/configs/apps/fuzzel" "$config_dir/" && print_success "fuzzel config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/wlogout" ] && cp -r "$SCRIPT_DIR/configs/apps/wlogout" "$config_dir/" && print_success "wlogout config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/wofi" ] && cp -r "$SCRIPT_DIR/configs/apps/wofi" "$config_dir/" && print_success "wofi config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/gammastep" ] && cp -r "$SCRIPT_DIR/configs/apps/gammastep" "$config_dir/" && print_success "gammastep config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/yazi" ] && cp -r "$SCRIPT_DIR/configs/apps/yazi" "$config_dir/" && print_success "yazi config restored"
+
+    # Other apps
+    [ -d "$SCRIPT_DIR/configs/apps/obsidian" ] && cp -r "$SCRIPT_DIR/configs/apps/obsidian" "$config_dir/" && print_success "obsidian config restored"
+    [ -d "$SCRIPT_DIR/configs/apps/beekeeper-studio" ] && cp -r "$SCRIPT_DIR/configs/apps/beekeeper-studio" "$config_dir/" && print_success "beekeeper-studio config restored"
+
+    # WhatsApp
+    if [ -d "$SCRIPT_DIR/configs/apps/whatsapp/WhatsApp-linux-x64" ]; then
+        print_step "Restoring WhatsApp Nativefier..."
+        ensure_directory "$home_dir/.local/share/applications"
+        cp -r "$SCRIPT_DIR/configs/apps/whatsapp/WhatsApp-linux-x64" "$home_dir/.local/share/applications/"
+        chmod +x "$home_dir/.local/share/applications/WhatsApp-linux-x64/WhatsApp"
+        print_success "WhatsApp application restored"
+    fi
+
+    # Desktop entries
+    if [ -d "$SCRIPT_DIR/configs/apps/desktop-entries" ]; then
+        print_step "Restoring custom desktop entries..."
+        ensure_directory "$home_dir/.local/share/applications"
+        cp "$SCRIPT_DIR/configs/apps/desktop-entries"/*.desktop "$home_dir/.local/share/applications/" 2>/dev/null
+        print_success "Desktop entries restored"
+    fi
+
+    # Custom icons
+    if [ -d "$SCRIPT_DIR/configs/apps/icons" ]; then
+        print_step "Restoring custom icons..."
+        ensure_directory "$home_dir/.local/share/icons"
+        cp -r "$SCRIPT_DIR/configs/apps/icons"/* "$home_dir/.local/share/icons/" 2>/dev/null
+        print_success "Custom icons restored"
+    fi
+
+    # Update desktop database
+    print_step "Updating desktop database..."
+    update-desktop-database "$home_dir/.local/share/applications" &> /dev/null
+    print_success "Desktop database updated"
+}
+
+restore_theme_configs() {
+    print_section "RESTORING THEME CONFIGURATIONS"
+
+    local home_dir=$(get_home_dir)
+    local config_dir="$home_dir/.config"
+
+    # GTK
+    [ -d "$SCRIPT_DIR/configs/theme/gtk-3.0" ] && cp -r "$SCRIPT_DIR/configs/theme/gtk-3.0" "$config_dir/" && print_success "GTK-3.0 theme restored"
+    [ -d "$SCRIPT_DIR/configs/theme/gtk-4.0" ] && cp -r "$SCRIPT_DIR/configs/theme/gtk-4.0" "$config_dir/" && print_success "GTK-4.0 theme restored"
+
+    # Qt
+    [ -d "$SCRIPT_DIR/configs/theme/Kvantum" ] && cp -r "$SCRIPT_DIR/configs/theme/Kvantum" "$config_dir/" && print_success "Kvantum theme restored"
+    [ -d "$SCRIPT_DIR/configs/theme/qt5ct" ] && cp -r "$SCRIPT_DIR/configs/theme/qt5ct" "$config_dir/" && print_success "qt5ct theme restored"
+    [ -d "$SCRIPT_DIR/configs/theme/qt6ct" ] && cp -r "$SCRIPT_DIR/configs/theme/qt6ct" "$config_dir/" && print_success "qt6ct theme restored"
+
+    # Matugen
+    if [ -d "$SCRIPT_DIR/configs/theme/matugen/matugen" ]; then
+        print_step "Restoring Matugen templates..."
+        ensure_directory "$config_dir"
+        cp -r "$SCRIPT_DIR/configs/theme/matugen/matugen" "$config_dir/"
+        print_success "Matugen templates restored"
+    fi
+}
+
+restore_git_config() {
+    print_section "RESTORING GIT CONFIGURATION"
+
+    local home_dir=$(get_home_dir)
+
+    if [ -f "$SCRIPT_DIR/configs/git/.gitconfig" ]; then
+        print_step "Restoring .gitconfig..."
+        cp "$SCRIPT_DIR/configs/git/.gitconfig" "$home_dir/"
+        print_success "Git configuration restored"
+    else
+        print_warning "No .gitconfig found in backup"
+        print_info "You will need to configure git manually (run configure_git)"
+    fi
+}
+
+restore_wallpapers() {
+    print_section "RESTORING WALLPAPERS"
+
+    local home_dir=$(get_home_dir)
+
+    print_step "Restoring wallpapers to ~/Pictures..."
+    ensure_directory "$home_dir/Pictures"
+
+    # Copy all wallpapers from wallpapers directory
+    if [ -d "$SCRIPT_DIR/wallpapers" ]; then
+        local count=$(find "$SCRIPT_DIR/wallpapers" -type f | wc -l)
+        if [ $count -gt 0 ]; then
+            cp -r "$SCRIPT_DIR/wallpapers"/* "$home_dir/Pictures/" 2>/dev/null
+            print_success "Restored $count wallpaper(s) to ~/Pictures"
+        else
+            print_warning "No wallpapers found in backup"
+        fi
+    else
+        print_warning "No wallpapers directory found"
+    fi
+}
+
+restore_systemd_configs() {
+    print_section "RESTORING SYSTEMD SERVICES"
+
+    local home_dir=$(get_home_dir)
+
+    # Create systemd user directory
+    ensure_directory "$home_dir/.config/systemd/user"
+
+    # Copy QuickShell service file
+    if [ -f "$SCRIPT_DIR/configs/system/systemd/user/quickshell.service" ]; then
+        print_step "Installing QuickShell systemd service..."
+        cp "$SCRIPT_DIR/configs/system/systemd/user/quickshell.service" "$home_dir/.config/systemd/user/"
+        print_success "QuickShell service installed"
+    else
+        print_warning "QuickShell service not found in backup"
+    fi
+
+    # Reload systemd daemon
+    print_step "Reloading systemd daemon..."
+    systemctl --user daemon-reload
+    print_success "Systemd daemon reloaded"
+
+    # Enable and start services
+    local services_to_enable=(
+        "quickshell.service"
+        "ydotool.service"
+        "hypridle.service"
+    )
+
+    print_step "Enabling systemd services..."
+    local enabled_count=0
+    for service in "${services_to_enable[@]}"; do
+        if systemctl --user enable "$service" &> /dev/null; then
+            ((enabled_count++))
+            print_info "  ✓ Enabled $service"
+        fi
+    done
+
+    if [ $enabled_count -gt 0 ]; then
+        print_success "Enabled $enabled_count systemd service(s)"
+        print_info "Services will start automatically on next login"
+    else
+        print_warning "No systemd services were enabled"
+    fi
+}
+
+expand_home_variables() {
+    print_section "EXPANDING \$HOME VARIABLES"
+
+    local home_dir=$(get_home_dir)
+
+    print_step "Expanding \$HOME in configuration files..."
+
+    # List of all files that contain $HOME and need expansion
+    local files_to_expand=(
+        "$home_dir/.config/chima/config.json"
+        "$home_dir/.config/hypr/hyprlock.conf"
+        "$home_dir/.config/hypr/custom/keybinds.conf"
+        "$home_dir/.config/matugen/templates/hyprland/hyprlock.conf"
+        "$home_dir/.local/share/applications/whatsapp.desktop"
+        "$home_dir/.config/btop/btop.conf"
+    )
+
+    local count=0
+    for file in "${files_to_expand[@]}"; do
+        if [ -f "$file" ]; then
+            perl -pi -e 's/\$HOME/$ENV{HOME}/g' "$file"
+            ((count++))
+        fi
+    done
+
+    print_success "Expanded \$HOME in $count configuration files"
+}
+
+fix_script_permissions() {
+    print_section "FIXING SCRIPT PERMISSIONS"
+
+    local home_dir=$(get_home_dir)
+
+    print_step "Making shell scripts executable..."
+
+    # Explicit list of all .sh scripts that need to be executable
+    local scripts=(
+        # SDDM Theme
+        "$home_dir/.config/sddm/chima/backgrounds/extract_first_frame.sh"
+        "$home_dir/.config/sddm/chima/change_avatar.sh"
+        "$home_dir/.config/sddm/chima/test.sh"
+        # Matugen
+        "$home_dir/.config/matugen/templates/kde/kde-material-you-colors-wrapper.sh"
+        # Hyprland
+        "$home_dir/.config/hypr/custom/scripts/launcher.sh"
+        "$home_dir/.config/hypr/custom/scripts/__restore_video_wallpaper.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/fuzzel-emoji.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/launch_first_available.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/record.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/start_geoclue_agent.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/workspace_action.sh"
+        "$home_dir/.config/hypr/hyprland/scripts/zoom.sh"
+        "$home_dir/.config/hypr/hyprlock/check-capslock.sh"
+        "$home_dir/.config/hypr/hyprlock/status.sh"
+        # QuickShell
+        "$home_dir/.config/quickshell/chima/scripts/colors/applycolor.sh"
+        "$home_dir/.config/quickshell/chima/scripts/colors/random_konachan_wall.sh"
+        "$home_dir/.config/quickshell/chima/scripts/colors/switchwall.sh"
+        "$home_dir/.config/quickshell/chima/scripts/hypridle-manager.sh"
+        "$home_dir/.config/quickshell/chima/scripts/hyprland-settings.sh"
+        "$home_dir/.config/quickshell/chima/scripts/kvantum/materialQT.sh"
+        "$home_dir/.config/quickshell/chima/scripts/switch-hyprlock-wallpaper.sh"
+        "$home_dir/.config/quickshell/chima/scripts/wallpaper-manager.sh"
+    )
+
+    local count=0
+    for script in "${scripts[@]}"; do
+        if [ -f "$script" ]; then
+            chmod +x "$script"
+            ((count++))
+        fi
+    done
+
+    print_success "Made $count shell scripts executable"
+}
+
+deploy_configurations() {
+    if [[ "$INSTALL_CONFIGS" != true ]]; then
+        return 0
+    fi
+
+    print_section "DEPLOYING CONFIGURATIONS"
+
+    print_info "This will restore all configurations..."
+    echo ""
+
+    # Restore all configs
+    restore_wm_configs
+    restore_editor_configs
+    restore_shell_configs
+    restore_terminal_configs
+    restore_dev_configs
+    restore_app_configs
+    restore_theme_configs
+    restore_git_config
+    restore_wallpapers
+
+    # Restore systemd services
+    restore_systemd_configs
+
+    # Expand $HOME variables in all config files
+    expand_home_variables
+
+    # Fix script permissions
+    fix_script_permissions
+
+    echo ""
+    print_success "All configurations deployed successfully!"
+    INSTALL_SUMMARY+=("Configurations deployed")
+}
+
+# ====================================================================
+# SERVICES SETUP
+# ====================================================================
+
+setup_system_services() {
+    print_section "CONFIGURING SYSTEM SERVICES"
+
+    local home_dir=$(get_home_dir)
+
+    print_info "Enabling system services to start on boot..."
+
+    local services=(
+        "bluetooth.service"
+        "docker.service"
+        "NetworkManager.service"
+        "sddm.service"
+        "tlp.service"
+    )
+
+    for service in "${services[@]}"; do
+        print_step "Enabling $service..."
+        if sudo systemctl enable "$service" &> /dev/null; then
+            print_success "Enabled $service"
+        else
+            print_info "Service $service not available or already enabled"
+        fi
+    done
+
+    # Enable timers
+    print_step "Enabling fstrim.timer..."
+    sudo systemctl enable fstrim.timer &> /dev/null && print_success "fstrim.timer enabled"
+
+    print_success "System services configured"
+}
+
+setup_user_services() {
+    print_section "CONFIGURING USER SERVICES"
+
+    local services=(
+        "hypridle.service"
+        "wireplumber.service"
+        "ydotool.service"
+        "pipewire.socket"
+        "pipewire-pulse.socket"
+    )
+
+    for service in "${services[@]}"; do
+        print_step "Enabling $service..."
+        if systemctl --user enable "$service" &> /dev/null; then
+            print_success "Enabled $service"
+        else
+            print_info "Service $service not available or already enabled"
+        fi
+    done
+
+    print_success "User services configured"
+}
+
+setup_user_groups() {
+    print_section "CONFIGURING USER GROUPS"
+
+    local username=$(get_username)
+    local groups=(
+        "docker"
+        "wheel"
+        "video"
+        "audio"
+        "input"
+    )
+
+    for group in "${groups[@]}"; do
+        if ! groups $username | grep -q "\b$group\b"; then
+            print_step "Adding $username to $group group..."
+            sudo usermod -aG "$group" "$username"
+            print_success "Added to $group"
+        else
+            print_info "Already in $group group"
+        fi
+    done
+
+    print_warning "You may need to log out and log back in for group changes to take effect"
+}
+
+setup_sddm_theme() {
+    print_section "SETTING UP SDDM CUSTOM THEME"
+
+    local theme_source="$SCRIPT_DIR/configs/system/sddm/chima"
+    local theme_dest="/usr/share/sddm/themes/chima"
+    local home_dir=$(get_home_dir)
+
+    # Check if theme exists in backup
+    if [ ! -d "$theme_source" ]; then
+        print_warning "SDDM theme not found in configs, skipping..."
+        return 0
+    fi
+
+    print_step "Installing chima theme..."
+    sudo cp -r "$theme_source" "$theme_dest" 2>/dev/null
+
+    if [ $? -eq 0 ]; then
+        print_success "SDDM theme installed to $theme_dest"
+    else
+        print_error "Failed to install SDDM theme"
+        return 0
+    fi
+
+    # Configure SDDM to use the theme
+    print_step "Configuring SDDM to use chima theme..."
+
+    sudo mkdir -p /etc/sddm.conf.d
+
+    sudo tee /etc/sddm.conf.d/theme.conf > /dev/null << EOF
+[Theme]
+Current=chima
+EOF
+
+    print_success "SDDM configured to use chima theme"
+
+    # Copy wallpaper if exists
+    if [ -f "$home_dir/Pictures/DarkSide.png" ]; then
+        print_step "Copying wallpaper to SDDM theme..."
+        sudo cp "$home_dir/Pictures/DarkSide.png" "$theme_dest/backgrounds/" 2>/dev/null
+        print_success "Wallpaper copied"
+    else
+        print_info "DarkSide.png will be added when wallpapers are restored"
+    fi
+
+    print_success "SDDM theme setup complete"
+}
+
+setup_grub() {
+    print_section "SETTING UP GRUB CONFIGURATION"
+
+    local grub_source="$SCRIPT_DIR/configs/system/grub/grub"
+    local grub_dest="/etc/default/grub"
+    local theme_source="$SCRIPT_DIR/configs/system/grub/chima"
+    local theme_dest="/boot/grub/themes/chima"
+
+    # Backup current GRUB config
+    if [ -f "$grub_dest" ]; then
+        print_step "Backing up current GRUB configuration..."
+        sudo cp "$grub_dest" "$grub_dest.backup.$(date +%Y%m%d_%H%M%S)"
+        print_success "GRUB config backed up"
+    fi
+
+    # STEP 1: Install chima theme FIRST (before copying config that references it)
+    if [ -d "$theme_source" ]; then
+        print_step "Installing chima GRUB theme..."
+        sudo mkdir -p /boot/grub/themes
+        sudo cp -r "$theme_source" "$theme_dest" 2>/dev/null
+
+        if [ $? -eq 0 ]; then
+            print_success "chima theme installed to $theme_dest"
+        else
+            print_error "Failed to install GRUB theme"
+            print_warning "GRUB will use default theme"
+        fi
+    else
+        print_warning "GRUB theme not found in backup, skipping..."
+    fi
+
+    # STEP 2: Restore GRUB config (theme now exists)
+    if [ -f "$grub_source" ]; then
+        print_step "Restoring GRUB configuration..."
+        sudo cp "$grub_source" "$grub_dest"
+        print_success "GRUB config restored"
+    else
+        print_info "GRUB config not found in backup, skipping..."
+        return 0
+    fi
+
+    # STEP 3: Regenerate GRUB configuration
+    print_step "Regenerating GRUB configuration..."
+    if sudo grub-mkconfig -o /boot/grub/grub.cfg &> /dev/null; then
+        print_success "GRUB configuration regenerated"
+    else
+        print_error "Failed to regenerate GRUB configuration"
+        print_warning "You may need to run: sudo grub-mkconfig -o /boot/grub/grub.cfg"
+        return 0
+    fi
+
+    print_success "GRUB setup complete (theme: chima)"
+}
+
+setup_tlp() {
+    print_section "SETTING UP TLP POWER MANAGEMENT"
+
+    local tlp_source="$SCRIPT_DIR/configs/system/tlp/tlp.conf"
+    local tlp_dest="/etc/tlp.conf"
+
+    if [ ! -f "$tlp_source" ]; then
+        print_info "TLP config not found in backup, skipping..."
+        return 0
+    fi
+
+    print_step "Backing up current TLP configuration..."
+    if [ -f "$tlp_dest" ]; then
+        sudo cp "$tlp_dest" "$tlp_dest.backup.$(date +%Y%m%d_%H%M%S)"
+        print_success "TLP config backed up"
+    fi
+
+    print_step "Restoring TLP configuration..."
+    sudo cp "$tlp_source" "$tlp_dest"
+    print_success "TLP configuration restored"
+
+    print_success "TLP setup complete"
+}
+
+setup_services() {
+    # Call all service setup functions
+    setup_system_services
+    setup_user_services
+    setup_user_groups
+    setup_sddm_theme
+    setup_grub
+    setup_tlp
+
+    INSTALL_SUMMARY+=("System services configured")
+}
+
+# ====================================================================
+# POST-INSTALLATION
+# ====================================================================
+
+post_installation() {
+    print_section "POST-INSTALLATION TASKS"
+
+    print_info "Performing final system configuration..."
+
+    print_step "Rebuilding font cache..."
+    fc-cache -fv > /dev/null 2>&1
+    print_success "Font cache rebuilt successfully"
+
+    print_step "Updating desktop database..."
+    update-desktop-database ~/.local/share/applications/ > /dev/null 2>&1 || true
+    print_success "Desktop database updated"
+
+    print_step "Configuring default shell..."
+    if command_exists fish; then
+        if ! grep -q "$(which fish)" /etc/shells; then
+            echo "$(which fish)" | sudo tee -a /etc/shells > /dev/null
+            print_info "Added fish to /etc/shells"
+        fi
+        sudo chsh -s "$(which fish)" "$USER"
+        print_success "Default shell changed to fish"
+    else
+        print_info "Fish shell not installed, keeping current shell"
+    fi
+
+    print_step "Generating initial QuickShell theme colors..."
+    local home_dir=$(get_home_dir)
+    local switchwall_script="$home_dir/.config/quickshell/chima/scripts/colors/switchwall.sh"
+    if [ -f "$switchwall_script" ]; then
+        # Run as the actual user (not sudo) to generate colors in their home directory
+        # Let the script complete fully, just suppress output
+        sudo -u "$(get_username)" bash "$switchwall_script" --noswitch > /dev/null 2>&1 || true
+        print_success "Initial theme colors generated"
+    else
+        print_warning "QuickShell switchwall script not found, colors will be generated on first launch"
+    fi
+
+    echo ""
+    print_success "Post-installation tasks completed!"
+    INSTALL_SUMMARY+=("Post-installation tasks completed")
+}
+
+# ====================================================================
+# GIT CONFIGURATION
+# ====================================================================
+
+configure_git() {
+    print_section "GIT CONFIGURATION"
+
+    print_info "Git requires your name and email for commits."
+    echo ""
+
+    # Get git username
+    echo -e "${CYAN}Enter your full name (for git commits):${NC}"
+    read -p "> " git_name
+
+    # Get git email
+    echo -e "${CYAN}Enter your email (for git commits):${NC}"
+    read -p "> " git_email
+
+    # Configure git
+    if [[ -n "$git_name" ]] && [[ -n "$git_email" ]]; then
+        print_step "Configuring git globally..."
+        git config --global user.name "$git_name"
+        git config --global user.email "$git_email"
+        git config --global core.editor "nvim"
+        git config --global init.defaultBranch "main"
+        print_success "Git configured successfully"
+        print_info "Name: $git_name"
+        print_info "Email: $git_email"
+        INSTALL_SUMMARY+=("Git configured")
+    else
+        print_warning "Git configuration skipped (empty input)"
+    fi
+
+    echo ""
+
+    # SSH key generation
+    if ask_yes_no "Generate SSH key for git/GitHub?" "y"; then
+        print_step "Generating SSH key..."
+        ssh-keygen -t ed25519 -C "$git_email" -f "$HOME/.ssh/id_ed25519" -N ""
+
+        print_step "Starting ssh-agent..."
+        eval "$(ssh-agent -s)" > /dev/null
+        ssh-add "$HOME/.ssh/id_ed25519"
+
+        print_success "SSH key generated: ~/.ssh/id_ed25519.pub"
+        echo ""
+        print_info "Your public SSH key:"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        cat "$HOME/.ssh/id_ed25519.pub"
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        print_info "Add this key to GitHub: https://github.com/settings/keys"
+        INSTALL_SUMMARY+=("SSH key generated")
+        press_any_key
+    fi
+}
+
+# ====================================================================
+# COMPLETION
+# ====================================================================
+
+show_completion() {
+    clear
+    print_header "INSTALLATION COMPLETE!"
+
+    show_summary INSTALL_SUMMARY
+
+    local term_width=$(get_terminal_width)
+    local separator=$(printf '━%.0s' $(seq 1 $term_width))
+
+    echo -e "${GREEN}${separator}${NC}"
+    echo -e "${GREEN}  Next Steps:${NC}"
+    echo -e "${GREEN}${separator}${NC}"
+    echo ""
+    echo -e "  ${CYAN}1.${NC} Reboot your system: ${YELLOW}sudo reboot${NC}"
+    echo -e "  ${CYAN}2.${NC} Log in through SDDM"
+    echo -e "  ${CYAN}3.${NC} Select Hyprland as your session"
+    echo -e "  ${CYAN}4.${NC} Enjoy your new setup!"
+    echo ""
+
+    if [[ "$INSTALL_GITHUB" == true ]] || [[ "$INSTALL_GCLOUD" == true ]] || [[ "$INSTALL_PCLOUD" == true ]] || [[ "$INSTALL_CLAUDE" == true ]]; then
+        print_warning "Remaining authentication steps:"
+        [[ "$INSTALL_GITHUB" == true ]] && echo -e "  ${CYAN}*${NC} GitHub CLI: ${YELLOW}gh auth login${NC}"
+        [[ "$INSTALL_GCLOUD" == true ]] && echo -e "  ${CYAN}*${NC} Google Cloud: ${YELLOW}gcloud auth login${NC}"
+        [[ "$INSTALL_PCLOUD" == true ]] && echo -e "  ${CYAN}*${NC} pCloud: Launch and sign in"
+        [[ "$INSTALL_CLAUDE" == true ]] && echo -e "  ${CYAN}*${NC} Claude Code: Follow authentication prompts"
+        echo ""
+    fi
+
+    draw_box "Thank you for using Chima!"
+    echo ""
+}
+
+main() {
+    # Pre-flight checks (before sudo)
+    perform_system_checks
+
+    # Request sudo password upfront
+    print_section "SUDO ACCESS REQUIRED"
+    print_info "This installation requires administrative privileges."
+    print_step "Requesting sudo access..."
+
+    if ! sudo -v; then
+        echo ""
+        print_error "Failed to obtain sudo access"
+        print_info "Installation cancelled"
+        exit 1
+    fi
+
+    print_success "Sudo access granted"
+    echo ""
+
+    # Keep sudo alive in the background
+    while true; do
+        sudo -n true
+        sleep 60
+        kill -0 "$$" || exit
+    done 2>/dev/null &
+
+    show_welcome
+
+    select_installation_mode
+
+    clear_screen
+    print_section "SUMMARY"
+    echo -e "${CYAN}Core Installation:${NC}"
+    echo -e "  Official Repository Packages"
+    echo -e "  AUR Packages"
+    echo -e "  Fonts & Themes"
+    echo -e "  System Configurations"
+    echo -e "  Flatpak Packages"
+    echo -e "  NPM Global Packages"
+    echo ""
+    echo -e "${CYAN}Optional Packages:${NC}"
+    echo -e "  Claude Code:  ${BRIGHT_CYAN}$INSTALL_CLAUDE${NC}"
+    echo -e "  GitHub CLI:   ${BRIGHT_CYAN}$INSTALL_GITHUB${NC}"
+    echo -e "  Google Cloud: ${BRIGHT_CYAN}$INSTALL_GCLOUD${NC}"
+    echo -e "  pCloud Drive: ${BRIGHT_CYAN}$INSTALL_PCLOUD${NC}"
+
+    if ! confirm_action "Proceed with installation?" "y"; then
+        print_error "Installation cancelled."
+        exit 0
+    fi
+
+    update_system
+
+    init_pgp_keys
+
+    install_yay
+    install_official_packages
+    install_aur_packages
+    install_optional_packages_handler
+    install_flatpak_packages
+    install_npm_packages
+
+    deploy_configurations
+
+    setup_services
+
+    post_installation
+
+    configure_git
+
+    show_completion
+}
+
+main "$@"

@@ -1,0 +1,7 @@
+[init]
+	defaultbranch = main
+[fetch]
+	prune = true
+[user]
+	name = Gabriel Boni Vicari
+	email = gabriel@mantis-ai.com

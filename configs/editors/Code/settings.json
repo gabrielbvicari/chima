@@ -1,0 +1,20 @@
+{
+    "workbench.colorTheme": "Atom Just Black",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.empty.hint": "hidden",
+    "editor.indentSize": "tabSize",
+    "editor.renderWhitespace": "all",
+    "editor.renderLineHighlight": "none",
+    "editor.minimap.enabled": false,
+    "editor.renderControlCharacters": true,
+    "editor.fontLigatures": true,
+    "editor.rulers": [80, 120],
+    "editor.codeActionsOnSave": {},
+    "explorer.confirmDragAndDrop": false,
+    "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font Mono",
+    "terminal.integrated.cursorStyle": "line",
+    "git.autofetch": true,
+    "python.createEnvironment.trigger": "off",
+    "security.workspace.trust.banner": "always",
+    "security.workspace.trust.startupPrompt": "never"
+}

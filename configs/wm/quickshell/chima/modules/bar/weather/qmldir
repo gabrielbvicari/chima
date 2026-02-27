@@ -1,0 +1,5 @@
+# Auto-generated qmldir
+WeatherBar 1.0 WeatherBar.qml
+WeatherCard 1.0 WeatherCard.qml
+singleton WeatherIcons WeatherIcons.qml
+WeatherPopup 1.0 WeatherPopup.qml

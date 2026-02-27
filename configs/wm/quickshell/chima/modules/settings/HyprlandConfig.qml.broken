@@ -1,0 +1,362 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import qs
+import qs.services
+import qs.modules.common
+import qs.modules.common.widgets
+import qs.modules.common.functions
+
+ContentPage {
+    forceWidth: true
+
+    property bool initialized: false
+
+    Component.onCompleted: {
+        initialized = true;
+    }
+
+    ContentSection {
+        title: Translation.tr("Gaps & Spacing")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSpinBox {
+                text: Translation.tr("Inner gaps")
+                value: Config.options.hyprland.general.gaps_in
+                from: 0
+                to: 50
+                stepSize: 1
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.general.gaps_in = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "general:gaps_in", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "general.gaps_in", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Space between windows in pixels")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Outer gaps")
+                value: Config.options.hyprland.general.gaps_out
+                from: 0
+                to: 50
+                stepSize: 1
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.general.gaps_out = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "general:gaps_out", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "general.gaps_out", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Space between windows and screen edges")
+                }
+            }
+        }
+
+        ConfigSpinBox {
+            text: Translation.tr("Workspace gaps")
+            value: Config.options.hyprland.general.gaps_workspaces
+            from: 0
+            to: 200
+            stepSize: 5
+            onValueChanged: {
+                if (!initialized) return;
+                Config.options.hyprland.general.gaps_workspaces = value;
+                const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                Quickshell.execDetached(["hyprctl", "keyword", "general:gaps_workspaces", String(value)]);
+                Quickshell.execDetached([scriptPath, "--set", "general.gaps_workspaces", String(value)]);
+            }
+            StyledToolTip {
+                content: Translation.tr("Gap between workspaces when multiple are visible")
+            }
+        }
+    }
+
+    ContentSection {
+        title: Translation.tr("Borders & Rounding")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSpinBox {
+                text: Translation.tr("Border size")
+                value: Config.options.hyprland.general.border_size
+                from: 0
+                to: 10
+                stepSize: 1
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.general.border_size = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "general:border_size", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "general.border_size", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Thickness of window borders in pixels")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Corner rounding")
+                value: Config.options.hyprland.decoration.rounding
+                from: 0
+                to: 30
+                stepSize: 1
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.rounding = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:rounding", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.rounding", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Radius of rounded corners in pixels")
+                }
+            }
+        }
+    }
+
+    ContentSection {
+        title: Translation.tr("Opacity")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSpinBox {
+                text: Translation.tr("Active window (%)")
+                value: Config.options.hyprland.decoration.active_opacity
+                from: 10
+                to: 100
+                stepSize: 5
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.active_opacity = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    const opacityValue = value / 100;
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:active_opacity", String(opacityValue)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.active_opacity", String(opacityValue)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Transparency of the focused window")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Inactive window (%)")
+                value: Config.options.hyprland.decoration.inactive_opacity
+                from: 10
+                to: 100
+                stepSize: 5
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.inactive_opacity = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    const opacityValue = value / 100;
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:inactive_opacity", String(opacityValue)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.inactive_opacity", String(opacityValue)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Transparency of unfocused windows")
+                }
+            }
+        }
+
+        ConfigSpinBox {
+            text: Translation.tr("Fullscreen window (%)")
+            value: Config.options.hyprland.decoration.fullscreen_opacity
+            from: 10
+            to: 100
+            stepSize: 5
+            onValueChanged: {
+                if (!initialized) return;
+                Config.options.hyprland.decoration.fullscreen_opacity = value;
+                const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                const opacityValue = value / 100;
+                Quickshell.execDetached(["hyprctl", "keyword", "decoration:fullscreen_opacity", String(opacityValue)]);
+                Quickshell.execDetached([scriptPath, "--set", "decoration.fullscreen_opacity", String(opacityValue)]);
+            }
+            StyledToolTip {
+                content: Translation.tr("Transparency of fullscreen windows")
+            }
+        }
+    }
+
+    ContentSection {
+        title: Translation.tr("Blur")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSwitch {
+                id: blurEnabledSwitch
+                text: Translation.tr("Enable blur")
+                checked: Config.options.hyprland.decoration.blur.enabled
+                onCheckedChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.blur.enabled = checked;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:blur:enabled", checked ? "true" : "false"]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.blur.enabled", checked ? "true" : "false"]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Apply blur effect to transparent windows")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Blur size")
+                value: Config.options.hyprland.decoration.blur.size
+                from: 1
+                to: 30
+                stepSize: 1
+                enabled: blurEnabledSwitch.checked
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.blur.size = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:blur:size", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.blur.size", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Radius of the blur effect")
+                }
+            }
+        }
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSpinBox {
+                text: Translation.tr("Blur passes")
+                value: Config.options.hyprland.decoration.blur.passes
+                from: 1
+                to: 10
+                stepSize: 1
+                enabled: blurEnabledSwitch.checked
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.blur.passes = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:blur:passes", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.blur.passes", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Number of blur passes (higher = more intense but slower)")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Blur brightness (%)")
+                value: Config.options.hyprland.decoration.blur.brightness
+                from: 10
+                to: 200
+                stepSize: 10
+                enabled: blurEnabledSwitch.checked
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.blur.brightness = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    const brightnessValue = value / 100;
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:blur:brightness", String(brightnessValue)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.blur.brightness", String(brightnessValue)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Brightness multiplier for blurred areas")
+                }
+            }
+        }
+    }
+
+    ContentSection {
+        title: Translation.tr("Shadows")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSwitch {
+                id: shadowEnabledSwitch
+                text: Translation.tr("Enable shadows")
+                checked: Config.options.hyprland.decoration.shadow.enabled
+                onCheckedChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.shadow.enabled = checked;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:shadow:enabled", checked ? "true" : "false"]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.shadow.enabled", checked ? "true" : "false"]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Drop shadows around windows")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Shadow range")
+                value: Config.options.hyprland.decoration.shadow.range
+                from: 1
+                to: 100
+                stepSize: 5
+                enabled: shadowEnabledSwitch.checked
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.shadow.range = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:shadow:range", String(value)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.shadow.range", String(value)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Size of the shadow effect in pixels")
+                }
+            }
+        }
+    }
+
+    ContentSection {
+        title: Translation.tr("Dimming")
+
+        ConfigRow {
+            uniform: true
+
+            ConfigSwitch {
+                id: dimInactiveSwitch
+                text: Translation.tr("Dim inactive windows")
+                checked: Config.options.hyprland.decoration.dim_inactive
+                onCheckedChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.dim_inactive = checked;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:dim_inactive", checked ? "true" : "false"]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.dim_inactive", checked ? "true" : "false"]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("Darken unfocused windows to highlight the active one")
+                }
+            }
+
+            ConfigSpinBox {
+                text: Translation.tr("Dim strength (%)")
+                value: Config.options.hyprland.decoration.dim_strength
+                from: 0
+                to: 500
+                stepSize: 5
+                enabled: dimInactiveSwitch.checked
+                onValueChanged: {
+                    if (!initialized) return;
+                    Config.options.hyprland.decoration.dim_strength = value;
+                    const scriptPath = FileUtils.trimFileProtocol(`${Directories.scriptPath}/hyprland-settings.sh`);
+                    const dimValue = value / 1000;
+                    Quickshell.execDetached(["hyprctl", "keyword", "decoration:dim_strength", String(dimValue)]);
+                    Quickshell.execDetached([scriptPath, "--set", "decoration.dim_strength", String(dimValue)]);
+                }
+                StyledToolTip {
+                    content: Translation.tr("How much to darken inactive windows (0-50% recommended)")
+                }
+            }
+        }
+    }
+}

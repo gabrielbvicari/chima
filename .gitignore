@@ -1,0 +1,28 @@
+# Secrets and credentials
+*.env
+*.key
+*.pem
+credentials.json
+gcloud/
+ssh/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# Editor
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+*.backup

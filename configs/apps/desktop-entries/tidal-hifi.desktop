@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=TIDAL
+Comment=The web version of Tidal running in electron with hifi support
+Exec=/opt/tidal-hifi/tidal-hifi
+Icon=tidal
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Music;
+StartupNotify=true
+StartupWMClass=tidal-hifi
+MimeType=x-scheme-handler/tidal;

@@ -1,0 +1,191 @@
+{
+  "appearance": {
+    "extraBackgroundTint": true,
+    "fakeScreenRounding": 2,
+    "palette": {
+      "type": "scheme-monochrome"
+    },
+    "transparency": false,
+    "wallpaperTheming": {
+      "enableAppsAndShell": true,
+      "enableQtApps": true,
+      "enableTerminal": true
+    }
+  },
+  "apps": {
+    "bluetooth": "kcmshell6 kcm_bluetooth",
+    "network": "plasmawindowed org.kde.plasma.networkmanagement",
+    "networkEthernet": "kcmshell6 kcm_networkmanagement",
+    "taskManager": "plasma-systemmonitor --page-name Processes",
+    "terminal": "kitty -1"
+  },
+  "audio": {
+    "protection": {
+      "enable": true,
+      "maxAllowed": 100,
+      "maxAllowedIncrease": 10
+    }
+  },
+  "background": {
+    "clockX": -500,
+    "clockY": -500,
+    "fixedClockPosition": false,
+    "parallax": {
+      "enableSidebar": true,
+      "enableWorkspace": true,
+      "workspaceZoom": 1.1
+    },
+    "wallpaperPath": "$HOME/.config/chima/wallpaper.png"
+  },
+  "bar": {
+    "borderless": true,
+    "bottom": false,
+    "cornerStyle": 0,
+    "resources": {
+      "alwaysShowCpu": true,
+      "alwaysShowSwap": true
+    },
+    "screenList": [],
+    "showBackground": false,
+    "topLeftIcon": "spark",
+    "tray": {
+      "monochromeIcons": true
+    },
+    "utilButtons": {
+      "showColorPicker": true,
+      "showDarkModeToggle": false,
+      "showKeyboardToggle": true,
+      "showMicToggle": true,
+      "showScreenSnip": true
+    },
+    "verbose": true,
+    "weather": {
+      "city": "Porto Alegre",
+      "enable": true,
+      "enableGPS": false,
+      "fetchInterval": 10,
+      "useUSCS": false
+    },
+    "workspaces": {
+      "alwaysShowNumbers": false,
+      "monochromeIcons": true,
+      "showAppIcons": false,
+      "showNumberDelay": 300,
+      "shown": 10
+    }
+  },
+  "battery": {
+    "automaticSuspend": true,
+    "critical": 5,
+    "low": 20,
+    "suspend": 3
+  },
+  "dock": {
+    "enable": false,
+    "height": 60,
+    "hoverRegionHeight": 2,
+    "hoverToReveal": false,
+    "ignoredAppRegexes": [],
+    "monochromeIcons": true,
+    "pinnedApps": [],
+    "pinnedOnStartup": false
+  },
+  "hacks": {
+    "arbitraryRaceConditionDelay": 20
+  },
+  "hyprland": {
+    "decoration": {
+      "active_opacity": 100,
+      "blur": {
+        "brightness": 100,
+        "enabled": true,
+        "passes": 3,
+        "size": 21
+      },
+      "dim_inactive": true,
+      "dim_strength": 25,
+      "fullscreen_opacity": 100,
+      "inactive_opacity": 90,
+      "rounding": 20,
+      "shadow": {
+        "enabled": true,
+        "range": 30
+      }
+    },
+    "general": {
+      "border_size": 1,
+      "gaps_in": 5,
+      "gaps_out": 5,
+      "gaps_workspaces": 50
+    }
+  },
+  "input": {
+    "follow_mouse": true,
+    "numlock_by_default": true,
+    "repeat_delay": 250,
+    "repeat_rate": 35,
+    "touchpad": {
+      "clickfinger_behavior": true,
+      "disable_while_typing": true,
+      "natural_scroll": true,
+      "scroll_factor": 50,
+      "tap_to_click": true
+    }
+  },
+  "networking": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+  },
+  "osd": {
+    "timeout": 1000
+  },
+  "osk": {
+    "layout": "qwerty_full",
+    "pinnedOnStartup": false
+  },
+  "overview": {
+    "columns": 5,
+    "rows": 2,
+    "scale": 0.18
+  },
+  "power": {
+    "hypridle": {
+      "dpmsTimeout": 600,
+      "enableDpms": true,
+      "enableLock": true,
+      "enableSuspend": true,
+      "lockTimeout": 300,
+      "suspendTimeout": 900
+    },
+    "misc": {
+      "key_press_enables_dpms": true,
+      "mouse_move_enables_dpms": true
+    }
+  },
+  "resources": {
+    "updateInterval": 3000
+  },
+  "screenshotTool": {
+    "showContentRegions": true
+  },
+  "search": {
+    "engineBaseUrl": "https://duckduckgo.com/?q=",
+    "excludedSites": [
+      "quora.com"
+    ],
+    "nonAppResultDelay": 30,
+    "prefix": {
+      "action": "/",
+      "clipboard": ";",
+      "emojis": ":"
+    },
+    "sloppy": false
+  },
+  "time": {
+    "dateFormat": "dd/MM/yyyy",
+    "format": "hh:mm:ss"
+  },
+  "windows": {
+    "centerTitle": true,
+    "showTitlebar": true
+  }
+}

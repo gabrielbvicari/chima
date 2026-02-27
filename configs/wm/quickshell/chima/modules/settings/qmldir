@@ -1,0 +1,8 @@
+# Auto-generated qmldir
+About 1.0 About.qml
+HyprlandConfig 1.0 HyprlandConfig.qml
+InputConfig 1.0 InputConfig.qml
+InterfaceConfig 1.0 InterfaceConfig.qml
+PowerConfig 1.0 PowerConfig.qml
+ServicesConfig 1.0 ServicesConfig.qml
+StyleConfig 1.0 StyleConfig.qml
