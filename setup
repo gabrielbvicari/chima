@@ -704,6 +704,7 @@ fix_script_permissions() {
         # Matugen
         "$home_dir/.config/matugen/templates/kde/kde-material-you-colors-wrapper.sh"
         # Hyprland
+        "$home_dir/.config/hypr/hyprland/launcher.sh"
         "$home_dir/.config/hypr/custom/scripts/launcher.sh"
         "$home_dir/.config/hypr/custom/scripts/__restore_video_wallpaper.sh"
         "$home_dir/.config/hypr/hyprland/scripts/fuzzel-emoji.sh"
@@ -882,10 +883,18 @@ setup_sddm_theme() {
 
     sudo mkdir -p /etc/sddm.conf.d
 
-    sudo tee /etc/sddm.conf.d/theme.conf > /dev/null << EOF
+    # Deploy the full sddm.conf (numlock, HiDPI, avatars, session settings, etc.)
+    local sddm_conf_source="$SCRIPT_DIR/configs/system/sddm/sddm.conf"
+    if [ -f "$sddm_conf_source" ]; then
+        sudo cp "$sddm_conf_source" /etc/sddm.conf
+        print_success "SDDM system configuration deployed"
+    else
+        # Fallback: minimal theme-only config
+        sudo tee /etc/sddm.conf.d/theme.conf > /dev/null << EOF
 [Theme]
 Current=chima
 EOF
+    fi
 
     print_success "SDDM configured to use chima theme"
 
