@@ -15,6 +15,7 @@ NC='\033[0m'
 QUICKSHELL_UPDATED=false
 GRUB_UPDATED=false
 KERNEL_UPDATED=false
+HYPRLAND_UPDATED=false
 
 echo "[1/7] Checking for updates..."
 
@@ -38,6 +39,10 @@ fi
 
 if echo "$checkupdates_output" | grep -qE "^qt6|^hyprland"; then
     QUICKSHELL_UPDATED=true
+fi
+
+if echo "$checkupdates_output" | grep -q "^hyprland "; then
+    HYPRLAND_UPDATED=true
 fi
 
 if echo "$checkupdates_output" | grep -q "^grub "; then
@@ -191,6 +196,15 @@ if [ "$QUICKSHELL_UPDATED" = true ]; then
     else
         echo -e "${RED}Quickshell rebuild failed!${NC}"
         echo "Try manual rebuild: yay -S quickshell-git --rebuild"
+    fi
+fi
+
+if [ "$HYPRLAND_UPDATED" = true ]; then
+    echo "Recompiling Hyprland plugins (hyprpm)..."
+    if hyprpm update; then
+        echo -e "${GREEN}Hyprland plugins recompiled.${NC}"
+    else
+        echo -e "${YELLOW}hyprpm update failed. Run 'hyprpm update' manually.${NC}"
     fi
 fi
 

@@ -907,6 +907,21 @@ EOF
         print_info "DarkSide.png will be added when wallpapers are restored"
     fi
 
+    # Deploy user avatar for SDDM
+    local avatar_source="$SCRIPT_DIR/wallpapers/Profile.jpg"
+    local username
+    username=$(get_username)
+    local faces_dir="/usr/share/sddm/faces"
+
+    if [ -f "$avatar_source" ]; then
+        print_step "Deploying user avatar for SDDM..."
+        sudo mkdir -p "$faces_dir"
+        sudo cp "$avatar_source" "$faces_dir/${username}.face.icon"
+        print_success "User avatar deployed to $faces_dir/${username}.face.icon"
+    else
+        print_info "Profile.jpg not found, skipping avatar deployment"
+    fi
+
     print_success "SDDM theme setup complete"
 }
 
@@ -1027,6 +1042,17 @@ post_installation() {
         print_success "Default shell changed to fish"
     else
         print_info "Fish shell not installed, keeping current shell"
+    fi
+
+    print_step "Installing Hyprland plugins via hyprpm..."
+    if command_exists hyprpm; then
+        # hyprpm needs to run as the actual user, not root
+        sudo -u "$(get_username)" hyprpm update > /dev/null 2>&1 || true
+        sudo -u "$(get_username)" hyprpm add https://github.com/hyprwm/hyprland-plugins > /dev/null 2>&1 || true
+        sudo -u "$(get_username)" hyprpm enable hyprbars > /dev/null 2>&1 || true
+        print_success "Hyprland plugins installed (hyprbars)"
+    else
+        print_warning "hyprpm not found, plugins will need to be installed manually"
     fi
 
     print_step "Generating initial QuickShell theme colors..."
