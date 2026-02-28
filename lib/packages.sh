@@ -151,7 +151,10 @@ WM_KDE_PACKAGES=(
 # Chima Python dependencies:
 WM_PYTHON_PACKAGES=(
     "python-build"
+    "python-numpy"
     "python-pillow"
+    "python-pywayland"
+    "python-setproctitle"
     "python-setuptools-scm"
     "python-wheel"
     "clang"
