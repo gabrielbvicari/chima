@@ -420,31 +420,29 @@ show_progress() {
 
     if [[ $width -lt 20 ]]; then
         width=20
-    elif [[ $width -gt 100 ]]; then
-        width=100
     fi
 
     local percentage=$((current * 100 / total))
     local filled=$((width * current / total))
     local empty=$((width - filled))
 
-    printf "\r${CYAN}["
-    printf "${GREEN}%${filled}s" | tr ' ' '█'
-    printf "${CYAN}%${empty}s" | tr ' ' '░'
-    printf "] ${WHITE}%3d%%${NC}" $percentage
+    printf "\r${WHITE}["
+    printf "${GREEN}%${filled}s" | tr ' ' '#'
+    printf "${WHITE}%${empty}s" | tr ' ' '-'
+    printf "] %3d%%${NC}" $percentage
 }
 
 show_spinner() {
     local pid=$1
     local message=$2
-    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local spinstr='|/-\'
     local temp
 
     tput civis
 
     while kill -0 "$pid" 2>/dev/null; do
         temp=${spinstr#?}
-        printf "\r${CYAN}%c${NC} ${message}" "$spinstr"
+        printf "\r${WHITE}%c${NC} ${message}" "$spinstr"
         spinstr=$temp${spinstr%"$temp"}
         sleep 0.1
     done
@@ -460,11 +458,11 @@ install_packages_with_progress() {
     local current=0
     local failed_packages=()
 
-    echo -e "\n${CYAN}Installing ${total} packages...${NC}\n"
+    echo -e "\n${WHITE}Installing ${total} packages...${NC}\n"
 
     for pkg in "${packages[@]}"; do
-        ((current++))
-        echo -e "${CYAN}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
+        current=$((current + 1))
+        echo -e "${WHITE}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
 
         if [[ "$package_manager" == "pacman" ]]; then
             if ! install_package "$pkg"; then

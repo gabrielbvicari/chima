@@ -204,6 +204,7 @@ DEV_TOOLS_PACKAGES=(
     "docker"
     "docker-compose"
     "nodejs"
+    "npm"
     "python-pip"
     "python-debugpy"
     "python-black"

@@ -300,8 +300,8 @@ install_flatpak_packages() {
     local current=0
 
     for pkg in "${FLATPAK_PACKAGES[@]}"; do
-        ((current++))
-        echo -e "${CYAN}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
+        current=$((current + 1))
+        echo -e "${WHITE}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
         flatpak install -y flathub "$pkg"
         show_progress "$current" "$total"
         echo ""
@@ -330,8 +330,8 @@ install_npm_packages() {
     local current=0
 
     for pkg in "${NPM_PACKAGES[@]}"; do
-        ((current++))
-        echo -e "${CYAN}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
+        current=$((current + 1))
+        echo -e "${WHITE}[$current/$total]${NC} Installing ${YELLOW}$pkg${NC}..."
         sudo npm install -g "$pkg"
         show_progress "$current" "$total"
         echo ""
