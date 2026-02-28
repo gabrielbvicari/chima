@@ -48,6 +48,7 @@ WM_BASIC_PACKAGES=(
     "coreutils"
     "cliphist"
     "cmake"
+    "cpio"
     "curl"
     "rsync"
     "wget"
