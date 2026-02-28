@@ -36,24 +36,6 @@ check_disk_space() {
     print_success "Sufficient disk space available: ${available_gb}GB."
 }
 
-# Initialize PGP keys:
-init_pgp_keys() {
-    print_step "Initializing PGP keys..."
-
-    if ! sudo pacman-key --init &> /dev/null; then
-        print_warning "PGP key initialization had issues, continuing..."
-    fi
-
-    if ! sudo pacman-key --populate archlinux &> /dev/null; then
-        print_warning "PGP key population had issues, continuing..."
-    fi
-
-    if ! timeout 60 sudo pacman-key --refresh-keys &> /dev/null; then
-        print_warning "PGP key refresh timed out or failed, continuing..."
-    fi
-
-    print_success "PGP keys initialized."
-}
 
 install_package() {
     local pkg=$1

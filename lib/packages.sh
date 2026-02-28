@@ -35,7 +35,6 @@ DISPLAY_PACKAGES=(
 AUDIO_PACKAGES=(
     "pipewire"
     "pipewire-alsa"
-    "pipewire-jack"
     "pipewire-pulse"
     "gst-plugin-pipewire"
     "libpulse"

@@ -1192,8 +1192,6 @@ main() {
 
     update_system
 
-    init_pgp_keys
-
     install_yay
     install_official_packages
     install_aur_packages
