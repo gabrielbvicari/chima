@@ -697,10 +697,10 @@ fix_script_permissions() {
 
     # Explicit list of all .sh scripts that need to be executable
     local scripts=(
-        # SDDM Theme
-        "$home_dir/.config/sddm/chima/backgrounds/extract_first_frame.sh"
-        "$home_dir/.config/sddm/chima/change_avatar.sh"
-        "$home_dir/.config/sddm/chima/test.sh"
+        # SDDM Theme (installed to system path)
+        "/usr/share/sddm/themes/chima/backgrounds/extract_first_frame.sh"
+        "/usr/share/sddm/themes/chima/change_avatar.sh"
+        "/usr/share/sddm/themes/chima/test.sh"
         # Matugen
         "$home_dir/.config/matugen/templates/kde/kde-material-you-colors-wrapper.sh"
         # Hyprland
@@ -894,6 +894,13 @@ setup_sddm_theme() {
 [Theme]
 Current=chima
 EOF
+    fi
+
+    # Deploy kde_settings.conf to override KDE/Plasma defaults
+    local kde_conf_source="$SCRIPT_DIR/configs/system/sddm/kde_settings.conf"
+    if [ -f "$kde_conf_source" ]; then
+        sudo cp "$kde_conf_source" /etc/sddm.conf.d/kde_settings.conf
+        print_success "SDDM KDE settings override deployed"
     fi
 
     print_success "SDDM configured to use chima theme"

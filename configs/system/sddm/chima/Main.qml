@@ -19,6 +19,9 @@ Item {
         if (keyboard)
             capsLockOn = keyboard.capsLock;
     }
+    onCapsLockOnChanged: {
+        loginScreen.updateCapsLock();
+    }
 
     states: [
         State {
@@ -86,7 +89,7 @@ Item {
 
     Item {
         id: mainFrame
-        property variant geometry: screenModel.geometry(0)
+        property variant geometry: screenModel.geometry(screenModel.primary)
         x: geometry.x
         y: geometry.y
         width: geometry.width

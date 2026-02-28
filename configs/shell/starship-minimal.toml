@@ -1,22 +1,22 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[ ](bg:#101010 fg:#707070)\
-$os\
 [](bg:#101010 fg:#707070)\
+$os\
+[ ](bg:#101010 fg:#707070)\
 $directory\
 $git_branch\
 $git_status\
-[](#101010)\
+[](#101010)\
 $fill\
-[](#101010)\
+[](#101010)\
 $status\
 $cmd_duration\
-[](bg:#101010 fg:#707070)\
+[ ](bg:#101010 fg:#707070)\
 $sudo\
 $localip\
 $time\
-[ ](bg:#101010 fg:#567676)\
+[ ](bg:#101010 fg:#567676)\
 """
 
 [os]
@@ -24,56 +24,56 @@ style = "bg:#101010 fg:#c7c7c7"
 disabled = false
 
 [os.symbols]
-Alpaquita = " "
-Alpine = " "
-AlmaLinux = " "
-Amazon = " "
-Android = " "
-Arch = " "
-Artix = " "
-CachyOS = " "
-CentOS = " "
-Debian = " "
-DragonFly = " "
-Emscripten = " "
-EndeavourOS = " "
-Fedora = " "
-FreeBSD = " "
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
 Garuda = "󰛓 "
-Gentoo = " "
+Gentoo = " "
 HardenedBSD = "󰞌 "
 Illumos = "󰈸 "
-Kali = "  "
-Linux = " "
-Mabox = " "
-Macos = " "
-Manjaro = " "
-Mariner = " "
-MidnightBSD = " "
-Mint = " "
-NetBSD = " "
-NixOS = " "
-Nobara = " "
+Kali = "  "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
 OpenBSD = "󰈺 "
-openSUSE = " "
+openSUSE = " "
 OracleLinux = "󰌷 "
-Pop = " "
-Raspbian = " "
-Redhat = " "
-RedHatEnterprise = " "
-RockyLinux = " "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
 Redox = "󰀘 "
 Solus = "󰠳 "
-SUSE = " "
-Ubuntu = " "
-Unknown = " "
-Void = " "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
 Windows = "󰍲 "
 
 [cmd_duration]
 min_time = 1
 style = 'bg:#101010 fg:#707070'
-format = '[ [$duration](bold bg:#101010 fg:#707070)  ]($style)'
+format = '[ [$duration](bold bg:#101010 fg:#707070)  ]($style)'
 
 [status]
 style = 'bg:#101010'
@@ -84,9 +84,9 @@ map_symbol = false
 disabled = false
 
 [sudo]
-symbol = ""
+symbol = ""
 style = 'bg:#101010 fg:#707070'
-format = '[ $symbol ]($style)'
+format = '[ $symbol  ]($style)'
 disabled = false
 
 [character]
@@ -124,18 +124,19 @@ format = '[ $time ]($style)'
 
 [directory]
 style = "bg:#101010 fg:#0a96d6"
-format = "[   $path ]($style)"
+format = "[   $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = false
+fish_style_pwd_dir_length = 1
 home_symbol = '~'
 
 [directory.substitutions]
-"~" = "  ~"
+"~" = "  ~"
 "Documents" = "󰈙 "
-"Downloads" = " "
+"Downloads" = " "
 "Music" = "󰝚 "
-"Pictures" = " "
+"Pictures" = " "
 "MantisAI" = "󰲋 "
 
 [fill]
@@ -143,334 +144,334 @@ symbol = ' '
 
 [git_branch]
 style = "bg:#101010 fg:#56b60a"
-format = '[](bg:#101010 fg:#707070)[  ](bg:#101010 fg:#56b60a)[ $branch](bold $style)'
+format = '[](bg:#101010 fg:#707070)[  ](bg:#101010 fg:#56b60a)[ $branch](bold $style)'
 truncation_length = 10
 truncation_symbol = "…"
 
 [git_status]
 style = "bg:#101010 fg:#0a96d6"
 conflicted = "~ "
-up_to_date = " "
+up_to_date = " "
 untracked = "? "
 ahead = "⇡${count} "
 diverged = "⇕⇡${ahead_count}⇣${behind_count} "
 behind = "⇣${count} "
 stashed = "* "
-modified = " "
+modified = " "
 staged = '[++\($count\) ](bg:#101010 fg:#56b60a)'
-renamed = " "
-deleted = " "
-format = '[ $all_status$ahead_behind]($style)'
+renamed = " "
+deleted = " "
+format = '[ $all_status$ahead_behind ]($style)'
 
 [aws]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($profile) (\($region\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($profile) (\($region\) )]($style)'
 
 [azure]
 symbol = "󰠅 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($subscription) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($subscription) ]($style)'
 
 [buf]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [bun]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [c]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [cmake]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [cobol]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [conda]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
 
 [container]
 symbol = "⬢ "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($name) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($name) ]($style)'
 
 [crystal]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [daml]
 symbol = "Λ "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [dart]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [deno]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [docker_context]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($context) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($context) ]($style)'
 
 [dotnet]
 symbol = "󰪮 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version)($tfm) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version)($tfm) ]($style)'
 
 [elixir]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\(OTP $otp_version\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\(OTP $otp_version\) )]($style)'
 
 [elm]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [erlang]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [fennel]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [gcloud]
 symbol = "󱇶 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($account)(@$domain) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($account)(@$domain) ]($style)'
 
 [gleam]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [golang]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [guix_shell]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($style) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($style) ]($style)'
 
 [gradle]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [haskell]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [haxe]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [helm]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [java]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [julia]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [kotlin]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [kubernetes]
 symbol = "☸ "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($context) (\($namespace\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($context) (\($namespace\) )]($style)'
 
 [lua]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [meson]
 symbol = "󰔷 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
 
 [mojo]
 symbol = "󰈸 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($project) ]($style)'
 
 [nim]
 symbol = "󰆥 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [nix_shell]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($state) (\($name\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($state) (\($name\) )]($style)'
 
 [nodejs]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [ocaml]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\($switch_indicator$switch_name\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) (\($switch_indicator$switch_name\) )]($style)'
 
 [odin]
 symbol = "Ø "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [opa]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [openstack]
 symbol = "☁️ "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($cloud) (\($project\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($cloud) (\($project\) )]($style)'
 
 [package]
 symbol = "󰏗 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [perl]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [php]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [pulumi]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($stack) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($stack) ]($style)'
 
 [purescript]
 symbol = "<=> "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [python]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ ${symbol}${pyenv_prefix}($version) (\($virtualenv\) )]($style)'
+format = '[](bg:#101010 fg:#707070)[ ${symbol}${pyenv_prefix}($version) (\($virtualenv\) )]($style)'
 
 [quarto]
 symbol = "⨁ "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [rlang]
 symbol = "󰟔 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [raku]
 symbol = "󱖊 "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
 
 [red]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [ruby]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [rust]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [scala]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [solidity]
 symbol = 'S '
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [spack]
 symbol = '🅢 '
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($environment) ]($style)'
 
 [swift]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [terraform]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($workspace) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($workspace) ]($style)'
 
 [typst]
 symbol = "t "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version-$vm_version) ]($style)'
 
 [vagrant]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [vlang]
 symbol = 'V '
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 [zig]
-symbol = " "
+symbol = " "
 style = "bg:#101010 fg:#c7c7c7"
-format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
+format = '[](bg:#101010 fg:#707070)[ $symbol($version) ]($style)'
 
 
 [line_break]

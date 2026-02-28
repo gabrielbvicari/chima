@@ -1,4 +1,3 @@
-# Environment variables
 set -gx EDITOR nvim
 set -gx CLICOLOR 1
 set -gx LESS_TERMCAP_mb '\E[01;31m'
@@ -9,9 +8,8 @@ set -gx LESS_TERMCAP_so '\E[01;44;33m'
 set -gx LESS_TERMCAP_ue '\E[0m'
 set -gx LESS_TERMCAP_us '\E[01;32m'
 
-set -gx PATH ~/.local/bin ~/.npm-global/bin $PATH
+set -gx PATH ~/.npm-global/bin $PATH
 
-# Sudo Neovim with user config
 alias sudovim="sudo -E nvim"
 alias svim="sudo -E nvim"
 
@@ -61,6 +59,27 @@ if status is-interactive
         commandline -f repaint
     end
 
+    set fish_color_valid_path normal
+    set fish_color_autosuggestion brblack
+    set fish_color_command normal
+    set fish_color_param normal
+    set fish_color_redirection normal
+    set fish_color_quote normal
+    set fish_color_error normal
+    set fish_color_operator normal
+    set fish_color_escape normal
+    set fish_color_end normal
+    set fish_color_comment normal
+    set fish_color_match normal
+    set fish_color_selection normal
+    set fish_color_search_match normal
+    set fish_color_history_current normal
+
+    set fish_pager_color_completion normal
+    set fish_pager_color_description normal
+    set fish_pager_color_prefix normal
+    set fish_pager_color_progress normal
+
     if command -q fzf
         fzf --fish | source
     end
@@ -69,15 +88,7 @@ if status is-interactive
 end
 
 function fastfetch_centered -d "Run fastfetch centered on screen"
-    set terminal_width (tput cols)
-    set fastfetch_width 116
-    set left_padding (math "($terminal_width - $fastfetch_width) / 2")
-
-    if test $left_padding -gt 0
-        /usr/bin/fastfetch --logo-padding-left $left_padding
-    else
-        /usr/bin/fastfetch
-    end
+    /usr/bin/fastfetch --logo-padding-top 3
 end
 
 alias fastfetch fastfetch_centered
@@ -363,6 +374,13 @@ if test -d ~/.nvm
     end
 end
 
+# Claude Code:
+#set -gx CLAUDE_CODE_USE_VERTEX 1
+#set -gx CLOUD_ML_REGION us-east1
+#set -gx ANTHROPIC_VERTEX_PROJECT_ID prj-dev-mantis-services-01
+#set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/application_default_credentials.json
+
+# Gemini:
 set -gx GOOGLE_APPLICATION_CREDENTIALS $HOME/.config/gcloud/voltaic-reducer-367300-b4a43c2a898f.json
 set -gx GOOGLE_CLOUD_PROJECT voltaic-reducer-367300
 set -gx GOOGLE_CLOUD_LOCATION global
