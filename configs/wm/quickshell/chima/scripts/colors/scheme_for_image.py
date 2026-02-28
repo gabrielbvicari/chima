@@ -12,8 +12,9 @@ SCHEMES = [
     "scheme-monochrome",
     "scheme-neutral",
     "scheme-rainbow",
-    "scheme-tonal-spot"
+    "scheme-tonal-spot",
 ]
+
 
 def image_colorfulness(image):
     # Based on Hasler and Süsstrunk's colorfulness metric
@@ -24,15 +25,17 @@ def image_colorfulness(image):
     std_yb = np.std(yb)
     mean_rg = np.mean(rg)
     mean_yb = np.mean(yb)
-    colorfulness = np.sqrt(std_rg ** 2 + std_yb ** 2) + (0.3 * np.sqrt(mean_rg ** 2 + mean_yb ** 2))
+    colorfulness = np.sqrt(std_rg**2 + std_yb**2) + (
+        0.3 * np.sqrt(mean_rg**2 + mean_yb**2)
+    )
     return colorfulness
+
 
 # scheme-content respects the image's colors very well, but it might
 # look too saturated, so we only use it for not very colorful images to be safe
 def pick_scheme(colorfulness):
     if colorfulness < 10:
-        # return "scheme-monochrome"
-        return "scheme-content"
+        return "scheme-monochrome"
     elif colorfulness < 20:
         return "scheme-content"
     elif colorfulness < 50:
@@ -40,12 +43,13 @@ def pick_scheme(colorfulness):
     else:
         return "scheme-tonal-spot"
 
+
 def main():
     colorfulness_mode = False
     args = sys.argv[1:]
-    if '--colorfulness' in args:
+    if "--colorfulness" in args:
         colorfulness_mode = True
-        args.remove('--colorfulness')
+        args.remove("--colorfulness")
     if len(args) < 1:
         print("scheme-tonal-spot")
         sys.exit(1)
@@ -60,6 +64,7 @@ def main():
     else:
         scheme = pick_scheme(colorfulness)
         print(scheme)
+
 
 if __name__ == "__main__":
     main()
