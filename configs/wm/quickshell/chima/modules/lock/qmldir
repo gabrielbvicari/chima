@@ -1,4 +1,0 @@
-module qs.modules.lock
-LockContext 1.0 LockContext.qml
-Lock 1.0 Lock.qml
-LockSurface 1.0 LockSurface.qml

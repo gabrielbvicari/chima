@@ -6,10 +6,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-/**
- * Simple polled resource usage service with RAM, Swap, and CPU usage.
- */
 Singleton {
+    id: root
 	property double memoryTotal: 1
 	property double memoryFree: 1
 	property double memoryUsed: memoryTotal - memoryFree
@@ -58,18 +56,53 @@ Singleton {
     property double networkErrors: 0
     property double networkDropped: 0
 
+    property string maxAvailableMemoryString: kbToGbString(ResourceUsage.memoryTotal)
+    property string maxAvailableSwapString: kbToGbString(ResourceUsage.swapTotal)
+    property string maxAvailableCpuString: "--"
+
+    readonly property int historyLength: Config?.options.resources.historyLength ?? 60
+    property list<real> cpuUsageHistory: []
+    property list<real> memoryUsageHistory: []
+    property list<real> swapUsageHistory: []
+
+    function kbToGbString(kb) {
+        return (kb / (1024 * 1024)).toFixed(1) + " GB";
+    }
+
+    function updateMemoryUsageHistory() {
+        memoryUsageHistory = [...memoryUsageHistory, memoryUsedPercentage]
+        if (memoryUsageHistory.length > historyLength) {
+            memoryUsageHistory.shift()
+        }
+    }
+    function updateSwapUsageHistory() {
+        swapUsageHistory = [...swapUsageHistory, swapUsedPercentage]
+        if (swapUsageHistory.length > historyLength) {
+            swapUsageHistory.shift()
+        }
+    }
+    function updateCpuUsageHistory() {
+        cpuUsageHistory = [...cpuUsageHistory, cpuUsage]
+        if (cpuUsageHistory.length > historyLength) {
+            cpuUsageHistory.shift()
+        }
+    }
+    function updateHistories() {
+        updateMemoryUsageHistory()
+        updateSwapUsageHistory()
+        updateCpuUsageHistory()
+    }
+
 	Timer {
 		interval: 1
         running: true
         repeat: true
 		onTriggered: {
-            // Reload files
             fileMeminfo.reload()
             fileStat.reload()
             fileNetDev.reload()
             fileCpuInfo.reload()
 
-            // Parse memory and swap usage
             const textMeminfo = fileMeminfo.text()
             memoryTotal = Number(textMeminfo.match(/MemTotal: *(\d+)/)?.[1] ?? 1)
             memoryFree = Number(textMeminfo.match(/MemAvailable: *(\d+)/)?.[1] ?? 0)
@@ -80,7 +113,6 @@ Singleton {
             swapFree = Number(textMeminfo.match(/SwapFree: *(\d+)/)?.[1] ?? 0)
             swapCached = Number(textMeminfo.match(/SwapCached: *(\d+)/)?.[1] ?? 0)
 
-            // Parse CPU usage
             const textStat = fileStat.text()
             const cpuLine = textStat.match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/)
             if (cpuLine) {
@@ -97,7 +129,6 @@ Singleton {
                 previousCpuStats = { total, idle }
             }
 
-            // Parse per-core CPU usage
             const coreLines = textStat.match(/^cpu\d+\s+.+/gm)
             if (coreLines) {
                 const newCoreUsages = []
@@ -127,19 +158,16 @@ Singleton {
                 cpuCoreCount = newCoreUsages.length
             }
 
-            // Parse CPU model from cpuinfo
             const textCpuInfo = fileCpuInfo.text()
             const modelMatch = textCpuInfo.match(/model name\s*:\s*(.+)/)
             if (modelMatch) {
                 cpuModel = modelMatch[1].trim()
             }
 
-            // Get CPU frequencies and temperature
             cpuFrequencyProcess.running = true
             cpuTemperatureProcess.running = true
             memoryFrequencyProcess.running = true
 
-            // Parse network usage
             const textNetDev = fileNetDev.text()
             const lines = textNetDev.split('\n')
             let totalRxBytes = 0, totalTxBytes = 0, totalRxPackets = 0, totalTxPackets = 0
@@ -154,7 +182,6 @@ Singleton {
                         const rxBytes = Number(parts[1]) || 0
                         const txBytes = Number(parts[9]) || 0
 
-                        // Track the active interface (one with traffic)
                         if (rxBytes > 0 || txBytes > 0) {
                             if (!activeInterface || rxBytes > totalRxBytes) {
                                 activeInterface = parts[0].replace(':', '')
@@ -188,14 +215,13 @@ Singleton {
 
             previousNetworkStats = { rx: totalRxBytes, tx: totalTxBytes }
 
-            // Get network interface details
             if (networkInterface) {
                 networkInfoProcess.running = true
             }
 
-            // Get disk usage
             diskUsageProcess.running = true
 
+            root.updateHistories()
             interval = Config.options?.resources?.updateInterval ?? 3000
         }
 	}
@@ -212,7 +238,6 @@ Singleton {
             onStreamFinished: {
                 const parts = text.trim().split('---')
 
-                // Parse disk space info
                 if (parts[0]) {
                     const lines = parts[0].trim().split('\n')
                     if (lines.length >= 2) {
@@ -230,14 +255,11 @@ Singleton {
                     }
                 }
 
-                // Parse inode info
-                // Format: Filesystem Inodes IUsed IFree IUse% Mounted on
                 if (parts[1]) {
                     const lines = parts[1].trim().split('\n')
                     if (lines.length >= 2) {
                         const fields = lines[1].trim().split(/\s+/)
                         if (fields.length >= 5) {
-                            // fields[0] is Filesystem, we want fields[1-4]
                             diskInodesTotal = Number(fields[1]) || 0
                             diskInodesUsed = Number(fields[2]) || 0
                             diskInodesFree = Number(fields[3]) || 0
@@ -287,7 +309,8 @@ Singleton {
 
     Process {
         id: networkInfoProcess
-        command: ["sh", "-c", "ip -4 addr show enp8s0 2>/dev/null | grep -oP 'inet \\K[\\d.]+' && cat /sys/class/net/enp8s0/address 2>/dev/null && cat /sys/class/net/enp8s0/speed 2>/dev/null && cat /sys/class/net/enp8s0/operstate 2>/dev/null && cat /sys/class/net/enp8s0/mtu 2>/dev/null"]
+        property string iface: root.networkInterface
+        command: ["sh", "-c", `ip -4 addr show ${iface} 2>/dev/null | grep -oP 'inet \\K[\\d.]+' && cat /sys/class/net/${iface}/address 2>/dev/null && cat /sys/class/net/${iface}/speed 2>/dev/null && cat /sys/class/net/${iface}/operstate 2>/dev/null && cat /sys/class/net/${iface}/mtu 2>/dev/null`]
         stdout: StdioCollector {
             onStreamFinished: {
                 const lines = text.trim().split('\n')
@@ -298,6 +321,22 @@ Singleton {
                     networkLinkState = lines[3] || ""
                     networkMtu = Number(lines[4]) || 0
                 }
+            }
+        }
+    }
+
+    Process {
+        id: findCpuMaxFreqProc
+        environment: ({
+            LANG: "C",
+            LC_ALL: "C"
+        })
+        command: ["bash", "-c", "lscpu | grep 'CPU max MHz' | awk '{print $4}'"]
+        running: true
+        stdout: StdioCollector {
+            id: cpuMaxFreqCollector
+            onStreamFinished: {
+                root.maxAvailableCpuString = (parseFloat(cpuMaxFreqCollector.text) / 1000).toFixed(0) + " GHz"
             }
         }
     }

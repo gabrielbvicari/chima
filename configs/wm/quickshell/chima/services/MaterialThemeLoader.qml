@@ -6,10 +6,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-/**
- * Automatically reloads generated material colors.
- * It is necessary to run reapplyTheme() on startup because Singletons are lazily loaded.
- */
 Singleton {
     id: root
     property string filePath: Directories.generatedMaterialThemePath
@@ -18,11 +14,25 @@ Singleton {
         themeFileView.reload()
     }
 
+    function resetFilePathNextTime() {
+        resetFilePathNextWallpaperChange.enabled = true
+    }
+
+    Connections {
+        id: resetFilePathNextWallpaperChange
+        enabled: false
+        target: Config.options.background
+        function onWallpaperPathChanged() {
+            root.filePath = ""
+            root.filePath = Directories.generatedMaterialThemePath
+            resetFilePathNextWallpaperChange.enabled = false
+        }
+    }
+
     function applyColors(fileContent) {
         const json = JSON.parse(fileContent)
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
-                // Convert snake_case to CamelCase
                 const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
                 const m3Key = `m3${camelCaseKey}`
                 Appearance.m3colors[m3Key] = json[key]
@@ -54,5 +64,6 @@ Singleton {
             const fileContent = themeFileView.text()
             root.applyColors(fileContent)
         }
+        onLoadFailed: root.resetFilePathNextTime();
     }
 }

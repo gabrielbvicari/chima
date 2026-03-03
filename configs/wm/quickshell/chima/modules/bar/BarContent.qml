@@ -12,7 +12,7 @@ import qs.modules.common
 import qs.modules.common.widgets
 import qs.modules.common.functions
 
-Item { // Bar content region
+Item {
     id: root
 
     property var screen: root.QsWindow.window?.screen
@@ -28,21 +28,19 @@ Item { // Bar content region
         color: Appearance.colors.colOutlineVariant
     }
 
-    // Background shadow
     Loader {
         active: Config.options.bar.showBackground && Config.options.bar.cornerStyle === 1
         anchors.fill: barBackground
         sourceComponent: StyledRectangularShadow {
-            anchors.fill: undefined // The loader's anchors act on this, and this should not have any anchor
+            anchors.fill: undefined
             target: barBackground
         }
     }
-    // Background
     Rectangle {
         id: barBackground
         anchors {
             fill: parent
-            margins: Config.options.bar.cornerStyle === 1 ? (Appearance.sizes.hyprlandGapsOut) : 0 // idk why but +1 is needed
+            margins: Config.options.bar.cornerStyle === 1 ? (Appearance.sizes.hyprlandGapsOut) : 0
         }
         color: Config.options.bar.showBackground ? Appearance.colors.colLayer0 : "transparent"
         radius: Config.options.bar.cornerStyle === 1 ? Appearance.rounding.windowRounding : 0
@@ -50,7 +48,7 @@ Item { // Bar content region
         border.color: Appearance.colors.colLayer0Border
     }
 
-    MouseArea { // Left side | scroll to change brightness
+    MouseArea {
         id: barLeftSideMouseArea
         anchors.left: parent.left
         implicitHeight: Appearance.sizes.baseBarHeight
@@ -72,14 +70,12 @@ Item { // Bar content region
         }
         onPressed: event => {
         }
-        // Scroll to change brightness
         WheelHandler {
             onWheel: event => {
                 if (event.angleDelta.y < 0)
                     root.brightnessMonitor.setBrightness(root.brightnessMonitor.brightness - 0.05);
                 else if (event.angleDelta.y > 0)
                     root.brightnessMonitor.setBrightness(root.brightnessMonitor.brightness + 0.05);
-                // Store the mouse position and start tracking
                 barLeftSideMouseArea.lastScrollX = event.x;
                 barLeftSideMouseArea.lastScrollY = event.y;
                 barLeftSideMouseArea.trackingScroll = true;
@@ -97,7 +93,6 @@ Item { // Bar content region
             }
         }
         Item {
-            // Left section
             anchors.fill: parent
             implicitHeight: leftSectionRowLayout.implicitHeight
             implicitWidth: leftSectionRowLayout.implicitWidth
@@ -111,13 +106,12 @@ Item { // Bar content region
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            RowLayout { // Content
+            RowLayout {
                 id: leftSectionRowLayout
                 anchors.fill: parent
                 spacing: 10
 
                 RippleButton {
-                    // Left sidebar button
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.leftMargin: Appearance.rounding.screenRounding
                     Layout.fillWidth: false
@@ -161,7 +155,7 @@ Item { // Bar content region
         }
     }
 
-    RowLayout { // Middle section
+    RowLayout {
         id: middleSection
         anchors.centerIn: parent
         spacing: Config.options?.bar.borderless ? 4 : 8
@@ -195,7 +189,6 @@ Item { // Bar content region
                 id: workspacesWidget
                 Layout.fillHeight: true
                 MouseArea {
-                    // Right-click to toggle overview
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
 
@@ -250,7 +243,7 @@ Item { // Bar content region
         }
     }
 
-    MouseArea { // Right side | scroll to change volume
+    MouseArea {
         id: barRightSideMouseArea
 
         anchors.right: parent.right
@@ -280,7 +273,6 @@ Item { // Bar content region
                 MprisController.activePlayer.next();
             }
         }
-        // Scroll to change volume
         WheelHandler {
             onWheel: event => {
                 const currentVolume = Audio.value;
@@ -289,7 +281,6 @@ Item { // Bar content region
                     Audio.sink.audio.volume -= step;
                 else if (event.angleDelta.y > 0)
                     Audio.sink.audio.volume = Math.min(1, Audio.sink.audio.volume + step);
-                // Store the mouse position and start tracking
                 barRightSideMouseArea.lastScrollX = event.x;
                 barRightSideMouseArea.lastScrollY = event.y;
                 barRightSideMouseArea.trackingScroll = true;
@@ -327,7 +318,7 @@ Item { // Bar content region
                 spacing: 5
                 layoutDirection: Qt.RightToLeft
 
-                RippleButton { // Right sidebar button
+                RippleButton {
                     id: rightSidebarButton
 
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -412,7 +403,8 @@ Item { // Bar content region
                             color: rightSidebarButton.colText
                         }
                         MaterialSymbol {
-                            text: Bluetooth.bluetoothConnected ? "bluetooth_connected" : Bluetooth.bluetoothEnabled ? "bluetooth" : "bluetooth_disabled"
+                            visible: BluetoothStatus.available
+                            text: BluetoothStatus.connected ? "bluetooth_connected" : BluetoothStatus.enabled ? "bluetooth" : "bluetooth_disabled"
                             iconSize: Appearance.font.pixelSize.larger
                             color: rightSidebarButton.colText
                         }
@@ -430,7 +422,6 @@ Item { // Bar content region
                     Layout.fillHeight: true
                 }
 
-                // Weather
                 Loader {
                     Layout.leftMargin: 8
                     Layout.fillHeight: true

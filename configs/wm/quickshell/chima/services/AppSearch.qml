@@ -1,14 +1,9 @@
 pragma Singleton
 
 import qs.modules.common
-import "root:/modules/common/functions/fuzzysort.js" as Fuzzy
-import "root:/modules/common/functions/levendist.js" as Levendist
+import qs.modules.common.functions
 import Quickshell
 
-/**
- * - Eases fuzzy searching for applications by name
- * - Guesses icon name for window class name
- */
 Singleton {
     id: root
     property bool sloppySearch: Config.options?.search.sloppy ?? false
@@ -44,7 +39,11 @@ Singleton {
     ]
 
     readonly property list<DesktopEntry> list: Array.from(DesktopEntries.applications.values)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .filter((app, index, self) => 
+            index === self.findIndex((t) => (
+                t.id === app.id
+            ))
+    )
 
     readonly property var preppedNames: list.map(a => ({
         name: Fuzzy.prepare(`${a.name} `),
@@ -56,7 +55,7 @@ Singleton {
         entry: a
     }))
 
-    function fuzzyQuery(search: string): var { // Idk why list<DesktopEntry> doesn't work
+    function fuzzyQuery(search: string): var {
         if (root.sloppySearch) {
             const results = list.map(obj => ({
                 entry: obj,
@@ -89,14 +88,19 @@ Singleton {
         return str.toLowerCase().replace(/\s+/g, "-");
     }
 
+    function getUndescoreToKebabAppName(str) {
+        return str.toLowerCase().replace(/_/g, "-");
+    }
+
     function guessIcon(str) {
         if (!str || str.length == 0) return "image-missing";
 
-        // Normal substitutions
+        const entry = DesktopEntries.byId(str);
+        if (entry) return entry.icon;
+
         if (substitutions[str]) return substitutions[str];
         if (substitutions[str.toLowerCase()]) return substitutions[str.toLowerCase()];
 
-        // Regex substitutions
         for (let i = 0; i < regexSubstitutions.length; i++) {
             const substitution = regexSubstitutions[i];
             const replacedName = str.replace(
@@ -106,11 +110,8 @@ Singleton {
             if (replacedName != str) return replacedName;
         }
 
-        // Icon exists -> return as is
         if (iconExists(str)) return str;
 
-
-        // Simple guesses
         const lowercased = str.toLowerCase();
         if (iconExists(lowercased)) return lowercased;
 
@@ -123,8 +124,9 @@ Singleton {
         const kebabNormalizedGuess = getKebabNormalizedAppName(str);
         if (iconExists(kebabNormalizedGuess)) return kebabNormalizedGuess;
 
+        const undescoreToKebabGuess = getUndescoreToKebabAppName(str);
+        if (iconExists(undescoreToKebabGuess)) return undescoreToKebabGuess;
 
-        // Search in desktop entries
         const iconSearchResults = Fuzzy.go(str, preppedIcons, {
             all: true,
             key: "name"
@@ -142,8 +144,9 @@ Singleton {
             if (iconExists(guess)) return guess;
         }
 
+        const heuristicEntry = DesktopEntries.heuristicLookup(str);
+        if (heuristicEntry) return heuristicEntry.icon;
 
-        // Give up
-        return str;
+        return "application-x-executable";
     }
 }

@@ -8,9 +8,6 @@ import Quickshell.Io
 import QtQuick
 import qs.services.network
 
-/**
- * Network service with nmcli.
- */
 Singleton {
     id: root
 
@@ -53,7 +50,6 @@ Singleton {
                         ? "signal_wifi_off"
                         : "signal_wifi_bad"
 
-    // Control
     function enableWifi(enabled = true): void {
         const cmd = enabled ? "on" : "off";
         enableWifiProc.exec(["nmcli", "radio", "wifi", cmd]);
@@ -71,7 +67,6 @@ Singleton {
     function connectToWifiNetwork(accessPoint: WifiAccessPoint): void {
         accessPoint.askingPassword = false;
         root.wifiConnectTarget = accessPoint;
-        // We use this instead of `nmcli connection up SSID` because this also creates a connection profile
         connectProc.exec(["nmcli", "dev", "wifi", "connect", accessPoint.ssid])
 
     }
@@ -81,11 +76,10 @@ Singleton {
     }
 
     function openPublicWifiPortal() {
-        Quickshell.execDetached(["xdg-open", "https://nmcheck.gnome.org/"]) // From some StackExchange thread, seems to work
+        Quickshell.execDetached(["xdg-open", "https://nmcheck.gnome.org/"])
     }
 
     function changePassword(network: WifiAccessPoint, password: string, username = ""): void {
-        // TODO: enterprise wifi with username
         network.askingPassword = false;
         changePasswordProc.exec({
             "environment": {
@@ -108,13 +102,11 @@ Singleton {
         })
         stdout: SplitParser {
             onRead: line => {
-                // print(line)
                 getNetworks.running = true
             }
         }
         stderr: SplitParser {
             onRead: line => {
-                // print("err:", line)
                 if (line.includes("Secrets were required")) {
                     root.wifiConnectTarget.askingPassword = true
                 }
@@ -135,7 +127,7 @@ Singleton {
 
     Process {
         id: changePasswordProc
-        onExited: { // Re-attempt connection after changing password
+        onExited: {
             connectProc.running = false
             connectProc.running = true
         }
@@ -152,7 +144,6 @@ Singleton {
         }
     }
 
-    // Status update
     function update() {
         updateConnectionType.startCheck();
         wifiStatusProcess.running = true
@@ -185,7 +176,7 @@ Singleton {
         }
         onExited: (exitCode, exitStatus) => {
             const lines = updateConnectionType.buffer.trim().split('\n');
-            const connectivity = lines.pop() // none, limited, full
+            const connectivity = lines.pop()
             let hasEthernet = false;
             let hasWifi = false;
             let wifiStatus = "disconnected";
@@ -267,7 +258,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const PLACEHOLDER = "STRINGWHICHHOPEFULLYWONTBEUSED";
-                const rep = new RegExp("\\:", "g");
+                const rep = new RegExp("\\\\:", "g");
                 const rep2 = new RegExp(PLACEHOLDER, "g");
 
                 const allNetworks = text.trim().split("\n").map(n => {
@@ -282,23 +273,19 @@ Singleton {
                     };
                 }).filter(n => n.ssid && n.ssid.length > 0);
 
-                // Group networks by SSID and prioritize connected ones
                 const networkMap = new Map();
                 for (const network of allNetworks) {
                     const existing = networkMap.get(network.ssid);
                     if (!existing) {
                         networkMap.set(network.ssid, network);
                     } else {
-                        // Prioritize active/connected networks
                         if (network.active && !existing.active) {
                             networkMap.set(network.ssid, network);
                         } else if (!network.active && !existing.active) {
-                            // If both are inactive, keep the one with better signal
                             if (network.strength > existing.strength) {
                                 networkMap.set(network.ssid, network);
                             }
                         }
-                        // If existing is active and new is not, keep existing
                     }
                 }
 

@@ -28,7 +28,6 @@ Scope {
     }
 
     Variants {
-        // For each monitor
         model: {
             const screens = Quickshell.screens;
             const list = Config.options.bar.screenList;
@@ -40,7 +39,7 @@ Scope {
             id: barLoader
             active: GlobalStates.barOpen && !GlobalStates.screenLocked
             required property ShellScreen modelData
-            component: PanelWindow { // Bar window
+            component: PanelWindow {
                 id: barRoot
                 screen: barLoader.modelData
 
@@ -64,7 +63,7 @@ Scope {
                     right: true
                 }
 
-                Item { // Bar content region
+                Item {
                     id: barContent
                     anchors {
                         right: parent.right
@@ -89,16 +88,14 @@ Scope {
                         }
                     }
 
-                    // Background shadow
                     Loader {
                         active: showBarBackground && Config.options.bar.cornerStyle === 1
                         anchors.fill: barBackground
                         sourceComponent: StyledRectangularShadow {
-                            anchors.fill: undefined // The loader's anchors act on this, and this should not have any anchor
+                            anchors.fill: undefined
                             target: barBackground
                         }
                     }
-                    // Background
                     Rectangle {
                         id: barBackground
                         anchors {
@@ -114,7 +111,6 @@ Scope {
                         border.color: Appearance.m3colors.m3outlineVariant
                     }
 
-                    // Left corner - brightness control
                     MouseArea {
                         id: barLeftCornerMouseArea
                         anchors.left: parent.left
@@ -172,7 +168,6 @@ Scope {
                         }
                     }
 
-                    // Left section content
                     Item {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
@@ -230,7 +225,6 @@ Scope {
                         }
                     }
 
-                    // Workspaces - positioned at 20% from left
                     BarGroup {
                         id: workspacesGroup
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -255,16 +249,14 @@ Scope {
                         }
                     }
 
-                    // Middle section container - groups all center widgets for proper spacing calculation
                     Item {
                         id: middleSection
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.6  // Takes 60% of the bar width
+                        width: parent.width * 0.6
                         height: parent.height
                     }
 
-                    // UtilButtons - positioned at 65% from left
                     BarGroup {
                         id: menuGroup
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -279,7 +271,6 @@ Scope {
                         }
                     }
 
-                    // Weather - positioned at 35% from left
                     BarGroup {
                         id: weatherGroup
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -295,7 +286,6 @@ Scope {
                         }
                     }
 
-                    // Clock/Date - centered at 50%
                     BarGroup {
                         id: centerGroup
                         anchors.centerIn: parent
@@ -308,7 +298,6 @@ Scope {
                         }
                     }
 
-                    // Resources - positioned at 82% from left
                     BarGroup {
                         id: resourcesGroup
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -322,7 +311,6 @@ Scope {
                         }
                     }
 
-                    // Right corner - volume control
                     MouseArea {
                         id: barRightCornerMouseArea
                         anchors.right: parent.right
@@ -384,7 +372,6 @@ Scope {
                         }
                     }
 
-                    // Right section content
                     Item {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -398,7 +385,7 @@ Scope {
                             spacing: 5
                             layoutDirection: Qt.RightToLeft
 
-                            RippleButton { // Right sidebar button
+                            RippleButton {
                                     id: rightSidebarButton
 
                                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -473,7 +460,8 @@ Scope {
                                             color: rightSidebarButton.colText
                                         }
                                         MaterialSymbol {
-                                            text: Bluetooth.bluetoothConnected ? "bluetooth_connected" : Bluetooth.bluetoothEnabled ? "bluetooth" : "bluetooth_disabled"
+                                            visible: BluetoothStatus.available
+                                            text: BluetoothStatus.connected ? "bluetooth_connected" : BluetoothStatus.enabled ? "bluetooth" : "bluetooth_disabled"
                                             iconSize: Appearance.font.pixelSize.larger
                                             color: rightSidebarButton.colText
                                         }
@@ -501,7 +489,6 @@ Scope {
                         }
                     }
 
-                // Round decorators
                 Loader {
                     id: roundDecorators
                     anchors {
@@ -511,7 +498,7 @@ Scope {
                     y: Appearance.sizes.barHeight
                     width: parent.width
                     height: Appearance.rounding.screenRounding
-                    active: showBarBackground && Config.options.bar.cornerStyle === 0 // Hug
+                    active: showBarBackground && Config.options.bar.cornerStyle === 0
 
                     states: State {
                         name: "bottom"

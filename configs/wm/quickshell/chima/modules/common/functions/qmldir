@@ -1,7 +1,0 @@
-module qs.modules.common.functions
-singleton ColorUtils ColorUtils.qml
-singleton FileUtils FileUtils.qml
-singleton StringUtils StringUtils.qml
-singleton ObjectUtils ObjectUtils.qml
-singleton Levendist Levendist.qml
-singleton Fuzzy Fuzzy.qml

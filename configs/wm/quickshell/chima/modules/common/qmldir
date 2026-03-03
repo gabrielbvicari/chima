@@ -1,5 +1,0 @@
-module qs.modules.common
-singleton Config Config.qml
-singleton Appearance Appearance.qml
-singleton Persistent Persistent.qml
-singleton Directories Directories.qml

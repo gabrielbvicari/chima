@@ -1,0 +1,48 @@
+pragma Singleton
+import qs.modules.common
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+
+Singleton {
+    id: root
+
+    property alias inhibit: idleInhibitor.enabled
+    inhibit: false
+
+    Connections {
+        target: Persistent
+        function onReadyChanged() {
+            if (!Persistent.isNewHyprlandInstance) {
+                root.inhibit = Persistent.states.idle.inhibit;
+            } else {
+                Persistent.states.idle.inhibit = root.inhibit;
+            }
+        }
+    }
+
+    function toggleInhibit(active = null) {
+        if (active !== null) {
+            root.inhibit = active;
+        } else {
+            root.inhibit = !root.inhibit;
+        }
+        Persistent.states.idle.inhibit = root.inhibit;
+    }
+
+    IdleInhibitor {
+        id: idleInhibitor
+        window: PanelWindow {
+            implicitWidth: 0
+            implicitHeight: 0
+            color: "transparent"
+            anchors {
+                right: true
+                bottom: true
+            }
+            mask: Region {
+                item: null
+            }
+        }
+    }
+}
