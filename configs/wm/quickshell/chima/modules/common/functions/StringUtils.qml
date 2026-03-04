@@ -218,4 +218,61 @@ Singleton {
             return str;
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
+
+    /**
+     * Removes leading digits and a tab character from a cliphist entry string.
+     * @param {string} str
+     * @returns {string}
+     */
+    function cleanCliphistEntry(str: string): string {
+        return str.replace(/^\d+\t/, "");
+    }
+
+    /**
+     * Checks if any substring from a given list is contained within a string.
+     * @param {string} str
+     * @param {Array<string>} substrings
+     * @returns {boolean}
+     */
+    function stringListContainsSubstring(str, substrings) {
+        for (let i = 0; i < substrings.length; ++i) {
+            if (str.includes(substrings[i])) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a specific prefix from a string if it starts with that prefix.
+     * @param {string} str
+     * @param {string} prefix
+     * @returns {string}
+     */
+    function cleanPrefix(str, prefix) {
+        if (str.startsWith(prefix)) return str.slice(prefix.length);
+        return str;
+    }
+
+    /**
+     * Takes an array of prefixes and removes the first one that matches.
+     * @param {string} str
+     * @param {Array<string>} prefixes
+     * @returns {string}
+     */
+    function cleanOnePrefix(str, prefixes) {
+        for (let i = 0; i < prefixes.length; ++i) {
+            if (str.startsWith(prefixes[i])) return str.slice(prefixes[i].length);
+        }
+        return str;
+    }
+
+    /**
+     * Converts a string to title case, replacing hyphens and underscores with spaces.
+     * @param {string} str
+     * @returns {string}
+     */
+    function toTitleCase(str) {
+        return str.replace(/[-_]/g, " ").replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
 }

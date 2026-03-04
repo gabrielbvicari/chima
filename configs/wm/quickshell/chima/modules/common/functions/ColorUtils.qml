@@ -114,4 +114,55 @@ Singleton {
         var c = Qt.color(color);
         return Qt.rgba(c.r, c.g, c.b, c.a * (1 - percentage));
     }
+
+    /**
+     * Returns a color with the given alpha value (clamped to 0-1).
+     *
+     * @param {string} color - The base color (any Qt.color-compatible string).
+     * @param {number} alpha - The alpha value to apply (0-1).
+     * @returns {Qt.rgba} The resulting color.
+     */
+    function applyAlpha(color, alpha) {
+        var c = Qt.color(color);
+        var a = Math.max(0, Math.min(1, alpha));
+        return Qt.rgba(c.r, c.g, c.b, a);
+    }
+
+    /**
+     * Returns true if the color's HSL lightness is below 0.5 (i.e., is a "dark" color).
+     *
+     * @param {string} color - The color to check (any Qt.color-compatible string).
+     * @returns {boolean} Whether the color is dark.
+     */
+    function isDark(color) {
+        var c = Qt.color(color);
+        return c.hslLightness < 0.5;
+    }
+
+    /**
+     * Clamps a numeric value to the [0, 1] range.
+     *
+     * @param {number} x - The value to clamp.
+     * @returns {number} The clamped value.
+     */
+    function clamp01(x) {
+        return Math.min(1, Math.max(0, x));
+    }
+
+    /**
+     * Algebraically inverts the alpha compositing equation to solve for the solid overlay color
+     * that, at a given opacity over a base color, produces the target color.
+     *
+     * @param {color} baseColor - The base (background) color.
+     * @param {color} targetColor - The desired result color.
+     * @param {number} overlayOpacity - The opacity of the overlay (0-1).
+     * @returns {Qt.rgba} The overlay color with the given opacity.
+     */
+    function solveOverlayColor(baseColor, targetColor, overlayOpacity) {
+        let invA = 1.0 - overlayOpacity;
+        let r = (targetColor.r - baseColor.r * invA) / overlayOpacity;
+        let g = (targetColor.g - baseColor.g * invA) / overlayOpacity;
+        let b = (targetColor.b - baseColor.b * invA) / overlayOpacity;
+        return Qt.rgba(clamp01(r), clamp01(g), clamp01(b), overlayOpacity);
+    }
 }
