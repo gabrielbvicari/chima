@@ -56,9 +56,9 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             lineWidth: 2
             value: Math.min(1, Math.max(downSpeed, upSpeed) / (100 * 1024 * 1024))
-            size: 26
-            secondaryColor: Appearance.colors.colSecondaryContainer
-            primaryColor: Appearance.m3colors.m3onSecondaryContainer
+            implicitSize: 26
+            colSecondary: Appearance.colors.colSecondaryContainer
+            colPrimary: Appearance.m3colors.m3onSecondaryContainer
 
             MaterialSymbol {
                 anchors.centerIn: parent
