@@ -38,6 +38,6 @@ QuickToggleButton {
     Component.onCompleted: fetchActiveState.running = true
 
     StyledToolTip {
-        content: Translation.tr("Keep System Awake")
+        text: Translation.tr("Keep System Awake")
     }
 }

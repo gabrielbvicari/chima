@@ -36,6 +36,6 @@ QuickToggleButton {
         }
     }
     StyledToolTip {
-        content: Translation.tr("Night Light")
+        text: Translation.tr("Night Light")
     }
 }

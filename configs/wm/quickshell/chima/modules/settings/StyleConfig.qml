@@ -73,7 +73,7 @@ ContentPage {
                         Config.options.appearance.wallpaperTheming.enableQtApps = checked;
                     }
                     StyledToolTip {
-                        content: Translation.tr("Shell & Utilities theming must also be enabled")
+                        text: Translation.tr("Shell & Utilities theming must also be enabled")
                     }
                 }
                 ConfigSwitch {
@@ -83,7 +83,7 @@ ContentPage {
                         Config.options.appearance.wallpaperTheming.enableTerminal = checked;
                     }
                     StyledToolTip {
-                        content: Translation.tr("Shell & Utilities theming must also be enabled")
+                        text: Translation.tr("Shell & Utilities theming must also be enabled")
                     }
                 }
             }
