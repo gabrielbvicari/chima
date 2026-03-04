@@ -17,23 +17,18 @@ Rectangle {
     border.color: Appearance.m3colors.m3outlineVariant
     clip: true
 
-    // Helper function to get day of week (0 = Sunday, 1 = Monday, etc.)
     function getDayOfWeek(year, month, day) {
         return new Date(year, month, day).getDay()
     }
 
-    // Helper function to get number of days in a month
     function getDaysInMonth(year, month) {
         return new Date(year, month + 1, 0).getDate()
     }
 
-    // Helper function to get the first day of the month (0 = Monday, 6 = Sunday)
     function getFirstDayOfMonth(year, month) {
-        var day = new Date(year, month, 1).getDay()
-        return (day + 6) % 7  // Convert Sunday=0 to Monday=0
+        return new Date(year, month, 1).getDay()
     }
 
-    // Helper function to get days in previous month
     function getDaysInPreviousMonth(year, month) {
         return new Date(year, month, 0).getDate()
     }
@@ -45,7 +40,6 @@ Rectangle {
     property int daysInMonth: getDaysInMonth(currentYear, currentMonth)
     property int firstDayOfMonth: getFirstDayOfMonth(currentYear, currentMonth)
 
-    // Calculate day of year
     property int dayOfYear: {
         var start = new Date(currentYear, 0, 0);
         var diff = currentDate - start;
@@ -53,7 +47,6 @@ Rectangle {
         return Math.floor(diff / oneDay);
     }
 
-    // Calculate week number
     property int weekNumber: {
         var d = new Date(Date.UTC(currentYear, currentMonth, currentDay));
         var dayNum = d.getUTCDay() || 7;
@@ -77,7 +70,6 @@ Rectangle {
         anchors.centerIn: root
         width: root.width - root.margin * 2
 
-        // Header with full date
         RowLayout {
             spacing: 6
             Layout.alignment: Qt.AlignHCenter
@@ -96,7 +88,6 @@ Rectangle {
             }
         }
 
-        // Calendar grid
         GridLayout {
             id: calendarGrid
             columns: 7
@@ -104,9 +95,8 @@ Rectangle {
             columnSpacing: 6
             Layout.alignment: Qt.AlignHCenter
 
-            // Day headers (Monday first)
             Repeater {
-                model: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+                model: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
                 StyledText {
                     text: modelData
                     font.pixelSize: Appearance.font.pixelSize.small
@@ -120,9 +110,8 @@ Rectangle {
                 }
             }
 
-            // Days from previous month + current month + next month
             Repeater {
-                model: 42  // 6 weeks × 7 days = 42 cells
+                model: 42
                 Rectangle {
                     Layout.preferredWidth: 45
                     Layout.preferredHeight: 45
@@ -133,13 +122,10 @@ Rectangle {
                     property int prevMonthDays: getDaysInPreviousMonth(currentYear, currentMonth)
                     property int dayNumber: {
                         if (cellIndex < firstDayOfMonth) {
-                            // Previous month
                             return prevMonthDays - firstDayOfMonth + cellIndex + 1
                         } else if (cellIndex < firstDayOfMonth + daysInMonth) {
-                            // Current month
                             return cellIndex - firstDayOfMonth + 1
                         } else {
-                            // Next month
                             return cellIndex - firstDayOfMonth - daysInMonth + 1
                         }
                     }
@@ -160,7 +146,6 @@ Rectangle {
             }
         }
 
-        // Additional time information
         GridLayout {
             columns: 2
             rowSpacing: 6
@@ -169,7 +154,6 @@ Rectangle {
             Layout.fillWidth: true
             Layout.topMargin: 6
 
-            // Current time (full format)
             Rectangle {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
@@ -196,7 +180,6 @@ Rectangle {
                 }
             }
 
-            // Day of year
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: dayOfYearInfo.implicitHeight + 12
@@ -230,7 +213,6 @@ Rectangle {
                 }
             }
 
-            // Week number
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: weekInfo.implicitHeight + 12
@@ -264,7 +246,6 @@ Rectangle {
                 }
             }
 
-            // System uptime
             Rectangle {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
