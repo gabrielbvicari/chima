@@ -1,3 +1,0 @@
-[submodule "configs/wm/quickshell/chima/modules/common/widgets/shapes"]
-	path = configs/wm/quickshell/chima/modules/common/widgets/shapes
-	url = https://github.com/end-4/rounded-polygon-qmljs.git
