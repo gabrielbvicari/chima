@@ -5,34 +5,34 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-/**
- * Material 3 button with expressive bounciness. 
- * See https://m3.material.io/components/button-groups/overview
- */
 Button {
     id: root
     property bool toggled
     property string buttonText
     property real buttonRadius: Appearance?.rounding?.small ?? 8
     property real buttonRadiusPressed: Appearance?.rounding?.small ?? 6
-    property var downAction // When left clicking (down)
-    property var releaseAction // When left clicking (release)
-    property var altAction // When right clicking
-    property var middleClickAction // When middle clicking
+    property var downAction
+    property var releaseAction
+    property var altAction
+    property var middleClickAction
     property bool bounce: true
     property real baseWidth: contentItem.implicitWidth + horizontalPadding * 2
     property real baseHeight: contentItem.implicitHeight + verticalPadding * 2
-    property real clickedWidth: baseWidth + 20
+    property bool enableImplicitWidthAnimation: true
+    property bool enableImplicitHeightAnimation: true
+    property real clickedWidth: baseWidth + (isAtSide ? 10 : 20)
     property real clickedHeight: baseHeight
     property var parentGroup: root.parent
+    property int indexInParent: parentGroup?.children.indexOf(root) ?? -1
     property int clickIndex: parentGroup?.clickIndex ?? -1
+    property bool isAtSide: indexInParent === 0 || indexInParent === (parentGroup?.childrenCount - 1)
 
-    Layout.fillWidth: (clickIndex - 1 <= parentGroup.children.indexOf(root) && parentGroup.children.indexOf(root) <= clickIndex + 1)
-    Layout.fillHeight: (clickIndex - 1 <= parentGroup.children.indexOf(root) && parentGroup.children.indexOf(root) <= clickIndex + 1)
+    Layout.fillWidth: (clickIndex - 1 <= indexInParent && indexInParent <= clickIndex + 1)
+    Layout.fillHeight: (clickIndex - 1 <= indexInParent && indexInParent <= clickIndex + 1)
     implicitWidth: (root.down && bounce) ? clickedWidth : baseWidth
     implicitHeight: (root.down && bounce) ? clickedHeight : baseHeight
 
-    property color colBackground: ColorUtils.transparentize(Appearance?.colors.colLayer1Hover, 1) || "transparent"
+    property color colBackground: ColorUtils.transparentize(colBackgroundHover, 1) || "transparent"
     property color colBackgroundHover: Appearance?.colors.colLayer1Hover ?? "#E5DFED"
     property color colBackgroundActive: Appearance?.colors.colLayer1Active ?? "#D6CEE2"
     property color colBackgroundToggled: Appearance?.colors.colPrimary ?? "#65558F"
@@ -59,10 +59,12 @@ Button {
     }
 
     Behavior on implicitWidth {
+        enabled: root.enableImplicitWidthAnimation
         animation: Appearance.animation.clickBounce.numberAnimation.createObject(this)
     }
 
     Behavior on implicitHeight {
+        enabled: root.enableImplicitHeightAnimation
         animation: Appearance.animation.clickBounce.numberAnimation.createObject(this)
     }
 
@@ -73,7 +75,9 @@ Button {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
     }
 
+    property alias mouseArea: buttonMouseArea
     MouseArea {
+        id: buttonMouseArea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
@@ -93,13 +97,23 @@ Button {
             root.down = false
             if (event.button != Qt.LeftButton) return;
             if (root.releaseAction) root.releaseAction();
-            root.click() // Because the MouseArea already consumed the event
+        }
+        onClicked: (event) => {
+            if (event.button != Qt.LeftButton) return;
+            root.click()
         }
         onCanceled: (event) => {
             root.down = false
         }
+
+        onPressAndHold: () => {
+            altAction(); 
+            root.down = false; 
+            root.clicked = false;
+        };
     }
 
+    property bool tabbedTo: root.focus && (focusReason === Qt.TabFocusReason || focusReason === Qt.BacktabFocusReason)
     background: Rectangle {
         id: buttonBackground
         topLeftRadius: root.leftRadius
@@ -112,6 +126,9 @@ Button {
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
+
+        border.width: root.tabbedTo ? 2 : 0
+        border.color: Appearance.colors.colSecondary
     }
 
     contentItem: StyledText {

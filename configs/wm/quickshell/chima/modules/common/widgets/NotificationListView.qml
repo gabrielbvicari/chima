@@ -1,11 +1,11 @@
-import qs
-import qs.modules.common
+pragma ComponentBehavior: Bound
+
 import qs.modules.common.widgets
 import qs.services
 import QtQuick
 import Quickshell
 
-StyledListView { // Scrollable window
+StyledListView {
     id: root
     property bool popup: false
 
@@ -18,8 +18,7 @@ StyledListView { // Scrollable window
         required property int index
         required property var modelData
         popup: root.popup
-        anchors.left: parent?.left
-        anchors.right: parent?.right
+        width: ListView.view.width
         notificationGroup: popup ? 
             Notifications.popupGroupsByAppName[modelData] :
             Notifications.groupsByAppName[modelData]

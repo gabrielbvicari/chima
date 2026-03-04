@@ -11,22 +11,20 @@ RippleButton {
     property string mainText: "Button text"
     property Component mainContentComponent: Component {
         StyledText {
+            visible: text !== ""
             text: buttonWithIconRoot.mainText
             font.pixelSize: Appearance.font.pixelSize.small
             color: Appearance.colors.colOnSecondaryContainer
-            horizontalAlignment: Text.AlignHCenter
-            elide: Text.ElideRight
-            width: parent.width
         }
     }
     implicitHeight: 35
-    implicitWidth: 0  // Don't use implicit width, rely on Layout.fillWidth
-    horizontalPadding: 15
+    horizontalPadding: 10
     buttonRadius: Appearance.rounding.small
     colBackground: Appearance.colors.colLayer2
 
     contentItem: RowLayout {
         Item {
+            Layout.fillWidth: false
             implicitWidth: Math.max(materialIconLoader.implicitWidth, nerdIconLoader.implicitWidth)
             Loader {
                 id: materialIconLoader
@@ -52,8 +50,8 @@ RippleButton {
             }
         }
         Loader {
-            sourceComponent: buttonWithIconRoot.mainContentComponent
             Layout.fillWidth: true
+            sourceComponent: buttonWithIconRoot.mainContentComponent
             Layout.alignment: Qt.AlignVCenter
         }
     }

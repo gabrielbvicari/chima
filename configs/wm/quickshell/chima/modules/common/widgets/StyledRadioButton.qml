@@ -10,7 +10,8 @@ import Quickshell.Services.Pipewire
 
 RadioButton {
     id: root
-    implicitHeight: 40
+    padding: 4
+    implicitHeight: contentItem.implicitHeight + padding * 2
     property string description
     property color activeColor: Appearance?.colors.colPrimary ?? "#685496"
     property color inactiveColor: Appearance?.m3colors.m3onSurfaceVariant ?? "#45464F"
@@ -20,6 +21,7 @@ RadioButton {
     indicator: Item{}
     
     contentItem: RowLayout {
+        id: contentItem
         Layout.fillWidth: true
         spacing: 12
         Rectangle {
@@ -33,7 +35,6 @@ RadioButton {
             border.width: 2
             color: "transparent"
 
-            // Checked indicator
             Rectangle {
                 anchors.centerIn: parent
                 width: checked ? 10 : 4
@@ -54,7 +55,6 @@ RadioButton {
 
             }
 
-            // Hover
             Rectangle {
                 anchors.centerIn: parent
                 width: root.hovered ? 40 : 20

@@ -4,7 +4,7 @@ import qs.modules.common.functions
 import QtQuick
 import QtQuick.Layouts
 
-RippleButton { // Expand button
+RippleButton {
     id: root
     required property int count
     required property bool expanded
@@ -44,5 +44,4 @@ RippleButton { // Expand button
             }
         }
     }
-
 }

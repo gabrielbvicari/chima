@@ -5,22 +5,20 @@ import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
 
-/**
- * A button with ripple effect similar to in Material Design.
- */
 Button {
     id: root
     property bool toggled
     property string buttonText
+    property bool pointingHandCursor: true
     property real buttonRadius: Appearance?.rounding?.small ?? 4
     property real buttonRadiusPressed: buttonRadius
     property real buttonEffectiveRadius: root.down ? root.buttonRadiusPressed : root.buttonRadius
     property int rippleDuration: 1200
     property bool rippleEnabled: true
-    property var downAction // When left clicking (down)
-    property var releaseAction // When left clicking (release)
-    property var altAction // When right clicking
-    property var middleClickAction // When middle clicking
+    property var downAction
+    property var releaseAction
+    property var altAction
+    property var middleClickAction
 
     property color colBackground: ColorUtils.transparentize(Appearance?.colors.colLayer1Hover, 1) || "transparent"
     property color colBackgroundHover: Appearance?.colors.colLayer1Hover ?? "#E5DFED"
@@ -29,11 +27,12 @@ Button {
     property color colRipple: Appearance?.colors.colLayer1Active ?? "#D6CEE2"
     property color colRippleToggled: Appearance?.colors.colPrimaryActive ?? "#D6CEE2"
 
-    property color buttonColor: root.enabled ? (root.toggled ? 
+    opacity: root.enabled ? 1 : 0.4
+    property color buttonColor: ColorUtils.transparentize(root.toggled ? 
         (root.hovered ? colBackgroundToggledHover : 
             colBackgroundToggled) :
         (root.hovered ? colBackgroundHover : 
-            colBackground)) : colBackground
+            colBackground), root.enabled ? 0 : 1)
     property color rippleColor: root.toggled ? colRippleToggled : colRipple
 
     function startRipple(x, y) {
@@ -57,11 +56,11 @@ Button {
 
     MouseArea {
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.pointingHandCursor ? Qt.PointingHandCursor : Qt.ArrowCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onPressed: (event) => { 
             if(event.button === Qt.RightButton) {
-                if (root.altAction) root.altAction();
+                if (root.altAction) root.altAction(event);
                 return;
             }
             if(event.button === Qt.MiddleButton) {
@@ -91,6 +90,7 @@ Button {
 
     RippleAnim {
         id: rippleFadeAnim
+        duration: rippleDuration * 2
         target: ripple
         property: "opacity"
         to: 0
@@ -131,7 +131,7 @@ Button {
     background: Rectangle {
         id: buttonBackground
         radius: root.buttonEffectiveRadius
-        implicitHeight: 50
+        implicitHeight: 30
 
         color: root.buttonColor
         Behavior on color {

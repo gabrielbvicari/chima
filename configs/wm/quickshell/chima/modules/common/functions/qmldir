@@ -5,3 +5,4 @@ singleton StringUtils StringUtils.qml
 singleton ObjectUtils ObjectUtils.qml
 singleton Levendist Levendist.qml
 singleton Fuzzy Fuzzy.qml
+singleton NotificationUtils NotificationUtils.qml
