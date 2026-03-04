@@ -1,0 +1,6 @@
+module qs.modules.common.models
+AdaptedMaterialScheme AdaptedMaterialScheme.qml
+AnimatedTabIndexPair AnimatedTabIndexPair.qml
+FolderListModelWithHistory FolderListModelWithHistory.qml
+IndexModel IndexModel.qml
+LauncherSearchResult LauncherSearchResult.qml

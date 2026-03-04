@@ -19,7 +19,7 @@ singleton Idle Idle.qml
 singleton KeyringStorage KeyringStorage.qml
 singleton LatexRenderer LatexRenderer.qml
 singleton LauncherApps LauncherApps.qml
-# singleton LauncherSearch LauncherSearch.qml
+singleton LauncherSearch LauncherSearch.qml
 singleton MaterialThemeLoader MaterialThemeLoader.qml
 singleton MprisController MprisController.qml
 singleton Network Network.qml
@@ -36,6 +36,6 @@ singleton Todo Todo.qml
 singleton Translation Translation.qml
 singleton TrayService TrayService.qml
 singleton Updates Updates.qml
-# Wallpapers Wallpapers.qml
+Wallpapers Wallpapers.qml
 singleton Weather Weather.qml
 singleton Ydotool Ydotool.qml
