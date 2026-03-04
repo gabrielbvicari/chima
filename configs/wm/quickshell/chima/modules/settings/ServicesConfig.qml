@@ -16,7 +16,6 @@ ContentPage {
             tooltip: ""
 
             ConfigSelectionArray {
-                justified: true
                 currentValue: Config.options.time.format
                 configOptionName: "time.format"
                 onSelected: newValue => {

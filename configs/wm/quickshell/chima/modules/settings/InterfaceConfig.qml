@@ -12,7 +12,6 @@ ContentPage {
         title: Translation.tr("Bar")
 
         ConfigSelectionArray {
-            justified: true
             currentValue: Config.options.bar.cornerStyle
             configOptionName: "bar.cornerStyle"
             onSelected: newValue => {

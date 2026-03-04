@@ -70,7 +70,7 @@ Item {
 
         StyledText {
             visible: Config.options.bar.verbose && activePlayer != null
-            width: rowLayout.width - (CircularProgress.size + rowLayout.spacing * 2)
+            width: rowLayout.width - (CircularProgress.implicitSize + rowLayout.spacing * 2)
             Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true // Ensures the text takes up available space
             Layout.rightMargin: rowLayout.spacing

@@ -130,7 +130,6 @@ ApplicationWindow {
                     ContentSubsection {
                         title: Translation.tr("Material Palette")
                         ConfigSelectionArray {
-                            justified: true
                             currentValue: Config.options.appearance.palette.type
                             configOptionName: "appearance.palette.type"
                             onSelected: (newValue) => {

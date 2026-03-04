@@ -32,7 +32,6 @@ ContentPage {
         ContentSubsection {
             title: Translation.tr("Material Palette")
             ConfigSelectionArray {
-                justified: true
                 currentValue: Config.options.appearance.palette.type
                 configOptionName: "appearance.palette.type"
                 onSelected: (newValue) => {
@@ -141,7 +140,6 @@ ContentPage {
             title: Translation.tr("Screen Rounding")
 
             ConfigSelectionArray {
-                justified: true
                 currentValue: Config.options.appearance.fakeScreenRounding
                 configOptionName: "appearance.fakeScreenRounding"
                 onSelected: (newValue) => {
