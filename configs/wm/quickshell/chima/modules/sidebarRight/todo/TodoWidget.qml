@@ -61,7 +61,7 @@ Item {
             Repeater {
                 model: root.tabButtonList
                 delegate: SecondaryTabButton {
-                    selected: (index == currentTab)
+                    checked: (index == currentTab)
                     buttonText: modelData.name
                     buttonIcon: modelData.icon
                 }
