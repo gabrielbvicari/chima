@@ -1,0 +1,3 @@
+module qs.modules.overlay.fpsLimiter
+FpsLimiter FpsLimiter.qml
+FpsLimiterContent FpsLimiterContent.qml

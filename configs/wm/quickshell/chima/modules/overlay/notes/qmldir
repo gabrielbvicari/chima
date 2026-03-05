@@ -1,0 +1,3 @@
+module qs.modules.overlay.notes
+Notes Notes.qml
+NotesContent NotesContent.qml

@@ -10,7 +10,7 @@ Item {
     id: root
     required property PwNode node
     PwObjectTracker {
-        objects: [node]
+        objects: [root.node]
     }
 
     implicitHeight: rowLayout.implicitHeight
@@ -21,17 +21,17 @@ Item {
         spacing: 6
 
         Image {
-            property real size: slider.height * 0.9
+            property real size: 36
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             visible: source != ""
             sourceSize.width: size
             sourceSize.height: size
             source: {
                 let icon;
-                icon = AppSearch.guessIcon(root.node.properties["application.icon-name"]);
+                icon = AppSearch.guessIcon(root.node?.properties["application.icon-name"] ?? "");
                 if (AppSearch.iconExists(icon))
                     return Quickshell.iconPath(icon, "image-missing");
-                icon = AppSearch.guessIcon(root.node.properties["node.name"]);
+                icon = AppSearch.guessIcon(root.node?.properties["node.name"] ?? "");
                 return Quickshell.iconPath(icon, "image-missing");
             }
         }
@@ -46,8 +46,7 @@ Item {
                 color: Appearance.colors.colSubtext
                 elide: Text.ElideRight
                 text: {
-                    // application.name -> description -> name
-                    const app = root.node.properties["application.name"] ?? (root.node.description != "" ? root.node.description : root.node.name);
+                    const app = Audio.appNodeDisplayName(root.node);
                     const media = root.node.properties["media.name"];
                     return media != undefined ? `${app} • ${media}` : app;
                 }
@@ -55,8 +54,9 @@ Item {
 
             StyledSlider {
                 id: slider
-                value: root.node.audio.volume
-                onValueChanged: root.node.audio.volume = value
+                value: root.node?.audio.volume ?? 0
+                onMoved: root.node.audio.volume = value
+                configuration: StyledSlider.Configuration.S
             }
         }
     }

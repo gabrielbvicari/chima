@@ -1,0 +1,2 @@
+module qs.modules.overlay.volumeMixer
+VolumeMixer VolumeMixer.qml

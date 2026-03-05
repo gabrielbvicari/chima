@@ -1,0 +1,2 @@
+module qs.modules.overlay.floatingImage
+FloatingImage FloatingImage.qml

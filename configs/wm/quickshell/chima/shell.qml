@@ -18,10 +18,14 @@ import "modules/mediaControls"
 import "modules/notificationPopup"
 import "modules/onScreenDisplay"
 import "modules/onScreenKeyboard"
+import "modules/overlay"
 import "modules/overview"
+import "modules/polkit"
+import "modules/regionSelector"
 import "modules/screenCorners"
 import "modules/session"
 import "modules/sidebarRight"
+import "modules/wallpaperSelector"
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -41,11 +45,15 @@ ShellRoot {
     property bool enableOnScreenDisplayBrightness: true
     property bool enableOnScreenDisplayVolume: true
     property bool enableOnScreenKeyboard: true
+    property bool enableOverlay: true
     property bool enableOverview: true
+    property bool enablePolkit: true
+    property bool enableRegionSelector: true
     property bool enableReloadPopup: true
     property bool enableScreenCorners: true
     property bool enableSession: true
     property bool enableSidebarRight: true
+    property bool enableWallpaperSelector: true
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
@@ -73,11 +81,15 @@ ShellRoot {
     LazyLoader { active: enableOnScreenDisplayBrightness; component: OnScreenDisplayBrightness {} }
     LazyLoader { active: enableOnScreenDisplayVolume; component: OnScreenDisplayVolume {} }
     LazyLoader { active: enableOnScreenKeyboard; component: OnScreenKeyboard {} }
+    LazyLoader { active: enableOverlay; component: Overlay {} }
     LazyLoader { active: enableOverview; component: Overview {} }
+    LazyLoader { active: enablePolkit; component: Polkit {} }
+    LazyLoader { active: enableRegionSelector; component: RegionSelector {} }
     LazyLoader { active: enableReloadPopup; component: ReloadPopup {} }
     LazyLoader { active: enableScreenCorners; component: ScreenCorners {} }
     LazyLoader { active: enableSession; component: Session {} }
     LazyLoader { active: enableSidebarRight; component: SidebarRight {} }
+    LazyLoader { active: enableWallpaperSelector; component: WallpaperSelector {} }
 
     IpcHandler {
         target: "welcome"

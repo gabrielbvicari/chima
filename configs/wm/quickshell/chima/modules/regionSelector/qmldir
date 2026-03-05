@@ -1,0 +1,9 @@
+module qs.modules.regionSelector
+singleton RegionFunctions RegionFunctions.qml
+RegionSelector RegionSelector.qml
+RegionSelection RegionSelection.qml
+OptionsToolbar OptionsToolbar.qml
+TargetRegion TargetRegion.qml
+CursorGuide CursorGuide.qml
+CircleSelectionDetails CircleSelectionDetails.qml
+RectCornersSelectionDetails RectCornersSelectionDetails.qml

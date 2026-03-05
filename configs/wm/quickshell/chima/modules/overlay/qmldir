@@ -1,0 +1,8 @@
+module qs.modules.overlay
+singleton OverlayContext OverlayContext.qml
+Overlay Overlay.qml
+OverlayBackground OverlayBackground.qml
+OverlayContent OverlayContent.qml
+OverlayTaskbar OverlayTaskbar.qml
+OverlayWidgetDelegateChooser OverlayWidgetDelegateChooser.qml
+StyledOverlayWidget StyledOverlayWidget.qml
