@@ -11,6 +11,7 @@ import Quickshell.Hyprland
 
 QuickToggleButton {
     id: root
+    visible: BluetoothStatus.available
     toggled: BluetoothStatus.enabled
     buttonIcon: BluetoothStatus.connected ? "bluetooth_connected" : BluetoothStatus.enabled ? "bluetooth" : "bluetooth_disabled"
     onClicked: {
@@ -18,7 +19,7 @@ QuickToggleButton {
     }
     altAction: () => {
         Quickshell.execDetached(["bash", "-c", `${Config.options.apps.bluetooth}`])
-        Hyprland.dispatch("global quickshell:sidebarRightClose")
+        GlobalStates.sidebarRightOpen = false
     }
     StyledToolTip {
         text: Translation.tr("%1 | Right-click to configure").arg(

@@ -1,9 +1,10 @@
+pragma ComponentBehavior: Bound
 import qs.modules.common
 import qs.modules.common.widgets
-import qs
 import qs.services
-import "./calendar"
-import "./todo"
+import qs.modules.sidebarRight.calendar
+import qs.modules.sidebarRight.todo
+import qs.modules.sidebarRight.pomodoro
 import QtQuick
 import QtQuick.Layouts
 
@@ -12,31 +13,47 @@ Rectangle {
     radius: Appearance.rounding.normal
     color: Appearance.colors.colLayer1
     clip: true
-    implicitHeight: collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : bottomWidgetGroupRow.implicitHeight
+    implicitHeight: collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : 350
     property int selectedTab: Persistent.states.sidebar.bottomGroup.tab
+    property int previousIndex: -1
     property bool collapsed: Persistent.states.sidebar.bottomGroup.collapsed
     property var tabs: [
-        {"type": "calendar", "name": Translation.tr("Calendar"), "icon": "calendar_month", "widget": calendarWidget}, 
-        {"type": "todo", "name": Translation.tr("To Do"), "icon": "done_outline", "widget": todoWidget}
+        {
+            "type": "calendar",
+            "name": Translation.tr("Calendar"),
+            "icon": "calendar_month",
+            "widget": "calendar/CalendarWidget.qml"
+        },
+        {
+            "type": "todo",
+            "name": Translation.tr("To Do"),
+            "icon": "done_outline",
+            "widget": "todo/TodoWidget.qml"
+        },
+        {
+            "type": "timer",
+            "name": Translation.tr("Timer"),
+            "icon": "schedule",
+            "widget": "pomodoro/PomodoroWidget.qml"
+        },
     ]
 
     Behavior on implicitHeight {
         NumberAnimation {
             duration: Appearance.animation.elementMove.duration
             easing.type: Appearance.animation.elementMove.type
-                easing.bezierCurve: Appearance.animation.elementMove.bezierCurve
+            easing.bezierCurve: Appearance.animation.elementMove.bezierCurve
         }
     }
 
     function setCollapsed(state) {
-        Persistent.states.sidebar.bottomGroup.collapsed = state
+        Persistent.states.sidebar.bottomGroup.collapsed = state;
         if (collapsed) {
-            bottomWidgetGroupRow.opacity = 0
+            bottomWidgetGroupRow.opacity = 0;
+        } else {
+            collapsedBottomWidgetGroupRow.opacity = 0;
         }
-        else {
-            collapsedBottomWidgetGroupRow.opacity = 0
-        }
-        collapseCleanFadeTimer.start()
+        collapseCleanFadeTimer.start();
     }
 
     Timer {
@@ -44,24 +61,24 @@ Rectangle {
         interval: Appearance.animation.elementMove.duration / 2
         repeat: false
         onTriggered: {
-            if(collapsed) collapsedBottomWidgetGroupRow.opacity = 1
-            else bottomWidgetGroupRow.opacity = 1
+            if (collapsed)
+                collapsedBottomWidgetGroupRow.opacity = 1;
+            else
+                bottomWidgetGroupRow.opacity = 1;
         }
     }
 
-    Keys.onPressed: (event) => {
-        if ((event.key === Qt.Key_PageDown || event.key === Qt.Key_PageUp)
-            && event.modifiers === Qt.ControlModifier) {
+    Keys.onPressed: event => {
+        if ((event.key === Qt.Key_PageDown || event.key === Qt.Key_PageUp) && event.modifiers === Qt.ControlModifier) {
             if (event.key === Qt.Key_PageDown) {
-                root.selectedTab = Math.min(root.selectedTab + 1, root.tabs.length - 1)
+                root.selectedTab = Math.min(root.selectedTab + 1, root.tabs.length - 1);
             } else if (event.key === Qt.Key_PageUp) {
-                root.selectedTab = Math.max(root.selectedTab - 1, 0)
+                root.selectedTab = Math.max(root.selectedTab - 1, 0);
             }
             event.accepted = true;
         }
     }
 
-    // The thing when collapsed
     RowLayout {
         id: collapsedBottomWidgetGroupRow
         opacity: collapsed ? 1 : 0
@@ -76,13 +93,13 @@ Rectangle {
         }
 
         spacing: 15
-        
+
         CalendarHeaderButton {
             Layout.margins: 10
             Layout.rightMargin: 0
             forceCircle: true
-            onClicked: {
-                root.setCollapsed(false)
+            downAction: () => {
+                root.setCollapsed(false);
             }
             contentItem: MaterialSymbol {
                 text: "keyboard_arrow_up"
@@ -93,17 +110,15 @@ Rectangle {
         }
 
         StyledText {
-            property int remainingTasks: Todo.list.filter(task => !task.done).length;
+            property int remainingTasks: Todo.list.filter(task => !task.done).length
             Layout.margins: 10
             Layout.leftMargin: 0
-            // text: `${DateTime.collapsedCalendarFormat}   •   ${remainingTasks} task${remainingTasks > 1 ? "s" : ""}`
             text: Translation.tr("%1   •   %2 tasks").arg(DateTime.collapsedCalendarFormat).arg(remainingTasks)
             font.pixelSize: Appearance.font.pixelSize.large
             color: Appearance.colors.colOnLayer1
         }
     }
 
-    // The thing when expanded
     RowLayout {
         id: bottomWidgetGroupRow
 
@@ -118,18 +133,15 @@ Rectangle {
             }
         }
 
-        anchors.fill: parent 
-        height: tabStack.height
-        spacing: 10
-        
-        // Navigation rail
+        anchors.fill: parent
+        spacing: 20
+
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: false
             Layout.leftMargin: 10
             Layout.topMargin: 10
-            width: tabBar.width
-            // Navigation rail buttons
+            implicitWidth: tabBar.implicitWidth
             NavigationRailTabArray {
                 id: tabBar
                 anchors.verticalCenter: parent.verticalCenter
@@ -140,24 +152,25 @@ Rectangle {
                 Repeater {
                     model: root.tabs
                     NavigationRailButton {
+                        required property int index
+                        required property var modelData
                         showToggledHighlight: false
                         toggled: root.selectedTab == index
                         buttonText: modelData.name
                         buttonIcon: modelData.icon
-                        onClicked: {
-                            root.selectedTab = index
-                            Persistent.states.sidebar.bottomGroup.tab = index
+                        onPressed: {
+                            root.selectedTab = index;
+                            Persistent.states.sidebar.bottomGroup.tab = index;
                         }
                     }
                 }
             }
-            // Collapse button
             CalendarHeaderButton {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 forceCircle: true
-                onClicked: {
-                    root.setCollapsed(true)
+                downAction: () => {
+                    root.setCollapsed(true);
                 }
                 contentItem: MaterialSymbol {
                     text: "keyboard_arrow_down"
@@ -168,74 +181,90 @@ Rectangle {
             }
         }
 
-        // Content area
-        StackLayout {
-            id: tabStack
+        Item {
             Layout.fillWidth: true
-            // Take the highest one, because the TODO list has no implicit height. This way the heigth of the calendar is used when it's initially loaded with the TODO list
-            height: Math.max(...tabStack.children.map(child => child.tabLoader?.implicitHeight || 0)) // TODO: make this less stupid
-            Layout.alignment: Qt.AlignVCenter
-            property int realIndex: root.selectedTab
-            property int animationDuration: Appearance.animation.elementMoveFast.duration * 1.5
-            currentIndex: root.selectedTab
+            Layout.fillHeight: true
 
-            // Switch the tab on halfway of the anim duration
-            Connections {
-                target: root
-                function onSelectedTabChanged() {
-                    delayedStackSwitch.start()
-                    tabStack.realIndex = root.selectedTab
-                }
-            }
-            Timer {
-                id: delayedStackSwitch
-                interval: tabStack.animationDuration / 2
-                repeat: false
-                onTriggered: {
-                    tabStack.currentIndex = root.selectedTab
-                }
-            }
+            Loader {
+                id: tabStack
+                anchors.fill: parent
+                anchors.bottomMargin: -anchors.topMargin
 
-            Repeater {
-                model: tabs
-                Item { // TODO: make behavior on y also act for the item that's switched to
-                    id: tabItem
-                    property int tabIndex: index
-                    property string tabType: modelData.type
-                    property int animDistance: 5
-                    property var tabLoader: tabLoader
-                    // Opacity: show up only when being animated to
-                    opacity: (tabStack.currentIndex === tabItem.tabIndex && tabStack.realIndex === tabItem.tabIndex) ? 1 : 0
-                    // Y: starts animating when user selects a different tab
-                    y: (tabStack.realIndex === tabItem.tabIndex) ? 0 : (tabStack.realIndex < tabItem.tabIndex) ? animDistance : -animDistance
-                    Behavior on opacity { NumberAnimation { duration: tabStack.animationDuration / 2; easing.type: Easing.OutCubic } }
-                    Behavior on y { NumberAnimation { duration: tabStack.animationDuration; easing.type: Easing.OutExpo } }
-                    Loader {
-                        id: tabLoader
-                        anchors.fill: parent
-                        sourceComponent: modelData.widget
-                        focus: root.selectedTab === tabItem.tabIndex
+                Component.onCompleted: {
+                    tabStack.source = root.tabs[root.selectedTab].widget;
+                }
+
+                Connections {
+                    target: root
+                    function onSelectedTabChanged() {
+                        if (root.selectedTab > root.previousIndex)
+                            tabSwitchBehavior.animation.down = true;
+                        else if (root.selectedTab < root.previousIndex)
+                            tabSwitchBehavior.animation.down = false;
+                        tabStack.source = root.tabs[root.selectedTab].widget;
+                    }
+                }
+
+                Behavior on source {
+                    id: tabSwitchBehavior
+                    animation: TabSwitchAnim {
+                        id: upAnim
+                        down: true
                     }
                 }
             }
         }
     }
 
-    // Calendar component
-    Component {
-        id: calendarWidget
-
-        CalendarWidget {
-            anchors.centerIn: parent
+    component TabSwitchAnim: SequentialAnimation {
+        id: switchAnim
+        property bool down: false
+        ParallelAnimation {
+            PropertyAnimation {
+                target: tabStack
+                properties: "opacity"
+                to: 0
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+            }
+            PropertyAnimation {
+                target: tabStack.anchors
+                properties: "topMargin"
+                to: 10 * (switchAnim.down ? -1 : 1)
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+            }
         }
-    }
-
-    // To Do component
-    Component {
-        id: todoWidget
-        TodoWidget {
-            anchors.fill: parent
-            anchors.margins: 5
+        PropertyAction {
+            target: tabStack
+            property: "source"
+            value: root.tabs[root.selectedTab].widget
+        }
+        ParallelAnimation {
+            PropertyAnimation {
+                target: tabStack.anchors
+                properties: "topMargin"
+                from: 10 * -(switchAnim.down ? -1 : 1)
+                to: 0
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
+            }
+            PropertyAnimation {
+                target: tabStack
+                properties: "opacity"
+                to: 1
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animation.elementMoveEnter.bezierCurve
+            }
+        }
+        ScriptAction {
+            script: {
+                root.previousIndex = root.selectedTab;
+            }
         }
     }
 }

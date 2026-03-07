@@ -1,6 +1,6 @@
 import qs.modules.common
 import qs.modules.common.widgets
-import qs
+import qs.services
 import Quickshell
 import Quickshell.Io
 
@@ -12,7 +12,7 @@ QuickToggleButton {
     onClicked: {
         root.toggled = !root.toggled
         if (root.toggled) {
-            Quickshell.execDetached(["bash", "-c", `hyprctl --batch "keyword animations:enabled 0; keyword decoration:shadow:enabled 0; keyword decoration:blur:enabled 0; keyword decoration:active_opacity 1.0; keyword decoration:inactive_opacity 1.0; keyword general:gaps_in 0; keyword general:gaps_out 0; keyword general:border_size 1; keyword decoration:rounding 0; keyword general:allow_tearing 1"`])
+            Quickshell.execDetached(["bash", "-c", `hyprctl --batch "keyword animations:enabled 0; keyword decoration:shadow:enabled 0; keyword decoration:blur:enabled 0; keyword general:gaps_in 0; keyword general:gaps_out 0; keyword general:border_size 1; keyword decoration:rounding 0; keyword general:allow_tearing 1"`])
         } else {
             Quickshell.execDetached(["hyprctl", "reload"])
         }
@@ -22,10 +22,10 @@ QuickToggleButton {
         running: true
         command: ["bash", "-c", `test "$(hyprctl getoption animations:enabled -j | jq ".int")" -ne 0`]
         onExited: (exitCode, exitStatus) => {
-            root.toggled = exitCode !== 0 // Inverted because enabled = nonzero exit
+            root.toggled = exitCode !== 0
         }
     }
     StyledToolTip {
-        text: Translation.tr("Game Mode")
+        text: Translation.tr("Game mode")
     }
 }
