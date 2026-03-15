@@ -128,27 +128,6 @@ Item {
         spacing: 4
 
         BarGroup {
-            id: leftCenterGroup
-            anchors.verticalCenter: parent.verticalCenter
-            implicitWidth: root.centerSideModuleWidth
-
-            Resources {
-                alwaysShowAllResources: root.useShortenedForm === 2
-                Layout.fillWidth: root.useShortenedForm === 2
-            }
-
-            Media {
-                visible: root.useShortenedForm < 2
-                Layout.fillWidth: true
-            }
-        }
-
-        VerticalBarSeparator {
-            visible: Config.options?.bar.borderless
-        }
-
-        BarGroup {
-            id: middleCenterGroup
             anchors.verticalCenter: parent.verticalCenter
             padding: workspacesWidget.widgetPadding
 
@@ -172,18 +151,31 @@ Item {
             visible: Config.options?.bar.borderless
         }
 
+        Loader {
+            anchors.verticalCenter: parent.verticalCenter
+            active: Config.options.bar.weather.enable
+
+            sourceComponent: BarGroup {
+                WeatherBar {}
+            }
+        }
+
+        VerticalBarSeparator {
+            visible: Config.options?.bar.borderless && Config.options.bar.weather.enable
+        }
+
         MouseArea {
-            id: rightCenterGroup
+            id: centerClockGroup
             anchors.verticalCenter: parent.verticalCenter
             implicitWidth: root.centerSideModuleWidth
-            implicitHeight: rightCenterGroupContent.implicitHeight
+            implicitHeight: centerClockGroupContent.implicitHeight
 
             onPressed: {
                 GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
             }
 
             BarGroup {
-                id: rightCenterGroupContent
+                id: centerClockGroupContent
                 anchors.fill: parent
 
                 ClockWidget {
@@ -196,11 +188,25 @@ Item {
                     visible: (Config.options.bar.verbose && root.useShortenedForm === 0)
                     Layout.alignment: Qt.AlignVCenter
                 }
+            }
+        }
 
-                BatteryIndicator {
-                    visible: (root.useShortenedForm < 2 && Battery.available)
-                    Layout.alignment: Qt.AlignVCenter
-                }
+        VerticalBarSeparator {
+            visible: Config.options?.bar.borderless
+        }
+
+        BarGroup {
+            anchors.verticalCenter: parent.verticalCenter
+            implicitWidth: root.centerSideModuleWidth
+
+            Resources {
+                alwaysShowAllResources: root.useShortenedForm === 2
+                Layout.fillWidth: root.useShortenedForm === 2
+            }
+
+            Media {
+                visible: root.useShortenedForm < 2
+                Layout.fillWidth: true
             }
         }
     }
@@ -331,6 +337,11 @@ Item {
                         iconSize: Appearance.font.pixelSize.larger
                         color: rightSidebarButton.colText
                     }
+                    BatteryIndicator {
+                        Layout.leftMargin: indicatorsRowLayout.realSpacing
+                        visible: Battery.available
+                        Layout.alignment: Qt.AlignVCenter
+                    }
                 }
             }
 
@@ -346,14 +357,6 @@ Item {
                 Layout.fillHeight: true
             }
 
-            Loader {
-                Layout.leftMargin: 4
-                active: Config.options.bar.weather.enable
-
-                sourceComponent: BarGroup {
-                    WeatherBar {}
-                }
-            }
         }
     }
 }

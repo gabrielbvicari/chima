@@ -7,6 +7,9 @@ set -eo pipefail
 REPO="https://github.com/gabrielbvicari/chima.git"
 INSTALL_DIR="$HOME/chima"
 
+echo "Syncing package databases..."
+sudo pacman -Sy
+
 if ! command -v git &>/dev/null; then
     echo "Installing git..."
     sudo pacman -S --noconfirm git
