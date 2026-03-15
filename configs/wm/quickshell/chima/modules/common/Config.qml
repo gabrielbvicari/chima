@@ -78,7 +78,7 @@ Singleton {
 
             property JsonObject appearance: JsonObject {
                 property bool extraBackgroundTint: true
-                property int fakeScreenRounding: 2                              Options: // 0: None, 1: Always, 2: When not fullscreen.
+                property int fakeScreenRounding: 2 // Options: 0: None, 1: Always, 2: When not fullscreen.
                 property JsonObject fonts: JsonObject {
                     property string main: "Rubik"
                     property string numbers: "Rubik"
