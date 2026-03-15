@@ -4,13 +4,14 @@ import qs.modules.common.widgets
 import qs
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
 Item {
     id: root
-    required property var bar
-    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(bar.screen)
+    property var screen: root.QsWindow.window?.screen
+    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
 
     property string activeWindowAddress: `0x${activeWindow?.HyprlandToplevel?.address}`
@@ -19,7 +20,7 @@ Item {
 
     // Dynamic character limit based on screen width
     readonly property int maxTitleChars: {
-        const width = bar.screen.width;
+        const width = screen?.width ?? 1920;
         if (width >= 2560) return 50;   // 2K/4K screens
         if (width >= 1920) return 40;   // 1080p screens
         if (width >= 1600) return 30;   // Medium screens

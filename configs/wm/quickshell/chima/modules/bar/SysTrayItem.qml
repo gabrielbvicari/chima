@@ -1,24 +1,26 @@
-import qs.modules.common
-import qs.modules.common.functions
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
+import qs.services
+import qs.modules.common
+import qs.modules.common.widgets
+import qs.modules.common.functions
 
 MouseArea {
     id: root
-
-    required property var bar
     required property SystemTrayItem item
     property bool targetMenuOpen: false
-    property int trayItemWidth: Appearance.font.pixelSize.larger
 
+    signal menuOpened(qsWindow: var)
+    signal menuClosed()
+
+    hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
-    Layout.fillHeight: true
-    implicitWidth: trayItemWidth
-    onClicked: (event) => {
+    implicitWidth: 20
+    implicitHeight: 20
+    onPressed: (event) => {
         switch (event.button) {
         case Qt.LeftButton:
             item.activate();
@@ -29,16 +31,34 @@ MouseArea {
         }
         event.accepted = true;
     }
+    onEntered: {
+        tooltip.text = TrayService.getTooltipForItem(root.item);
+    }
 
-    QsMenuAnchor {
+    Loader {
         id: menu
-
-        menu: root.item.menu
-        anchor.window: bar
-        anchor.rect.x: root.x + bar.width
-        anchor.rect.y: root.y
-        anchor.rect.height: root.height
-        anchor.edges: Edges.Bottom
+        function open() {
+            menu.active = true;
+        }
+        active: false
+        sourceComponent: SysTrayMenu {
+            Component.onCompleted: this.open();
+            trayItemMenuHandle: root.item.menu
+            anchor {
+                window: root.QsWindow.window
+                rect.x: root.x + (Config.options.bar.vertical ? 0 : QsWindow.window?.width)
+                rect.y: root.y + (Config.options.bar.vertical ? QsWindow.window?.height : 0)
+                rect.height: root.height
+                rect.width: root.width
+                edges: Config.options.bar.bottom ? (Edges.Top | Edges.Left) : (Edges.Bottom | Edges.Right)
+                gravity: Config.options.bar.bottom ? (Edges.Top | Edges.Left) : (Edges.Bottom | Edges.Right)
+            }
+            onMenuOpened: (window) => root.menuOpened(window);
+            onMenuClosed: {
+                root.menuClosed();
+                menu.active = false;
+            }
+        }
     }
 
     IconImage {
@@ -56,10 +76,10 @@ MouseArea {
         sourceComponent: Item {
             Desaturate {
                 id: desaturatedIcon
-                visible: false // There's already color overlay
+                visible: false
                 anchors.fill: parent
                 source: trayIcon
-                desaturation: 0.8 // 1.0 means fully grayscale
+                desaturation: 0.8
             }
             ColorOverlay {
                 anchors.fill: desaturatedIcon
@@ -67,6 +87,13 @@ MouseArea {
                 color: ColorUtils.transparentize(Appearance.colors.colOnLayer0, 0.9)
             }
         }
+    }
+
+    PopupToolTip {
+        id: tooltip
+        extraVisibleCondition: root.containsMouse
+        alternativeVisibleCondition: extraVisibleCondition
+        anchorEdges: (!Config.options.bar.bottom && !Config.options.bar.vertical) ? Edges.Bottom : Edges.Top
     }
 
 }

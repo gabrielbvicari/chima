@@ -13,9 +13,9 @@ import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
 
 Item {
-    required property var bar
+    property var screen: QsWindow.window?.screen
     property bool borderless: Config.options.bar.borderless
-    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(bar.screen)
+    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     
     readonly property int workspaceGroup: Math.floor((monitor.activeWorkspace?.id - 1) / Config.options.bar.workspaces.shown)
@@ -28,17 +28,14 @@ Item {
     property real workspaceIconMarginShrinked: -4
     property int workspaceIndexInGroup: (monitor.activeWorkspace?.id - 1) % Config.options.bar.workspaces.shown
 
-    // Function to update workspaceOccupied
     function updateWorkspaceOccupied() {
         workspaceOccupied = Array.from({ length: Config.options.bar.workspaces.shown }, (_, i) => {
             return Hyprland.workspaces.values.some(ws => ws.id === workspaceGroup * Config.options.bar.workspaces.shown + i + 1);
         })
     }
 
-    // Initialize workspaceOccupied when the component is created
     Component.onCompleted: updateWorkspaceOccupied()
 
-    // Listen for changes in Hyprland.workspaces.values
     Connections {
         target: Hyprland.workspaces
         function onValuesChanged() {
@@ -49,7 +46,6 @@ Item {
     implicitWidth: rowLayout.implicitWidth + rowLayout.spacing * 2
     implicitHeight: Appearance.sizes.barHeight
 
-    // Scroll to switch workspaces
     WheelHandler {
         onWheel: (event) => {
             if (event.angleDelta.y < 0)
@@ -70,7 +66,6 @@ Item {
         }
     }
 
-    // Workspaces - background
     RowLayout {
         id: rowLayout
         z: 1
@@ -110,17 +105,12 @@ Item {
                 Behavior on radiusRight {
                     animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
                 }
-
             }
-
         }
-
     }
 
-    // Active workspace
     Rectangle {
         z: 2
-        // Make active ws indicator, which has a brighter color, smaller to look like it is of the same size as ws occupied highlight
         property real activeWorkspaceMargin: 2
         implicitHeight: workspaceButtonWidth - activeWorkspaceMargin * 2
         radius: Appearance.rounding.full
@@ -135,13 +125,13 @@ Item {
         Behavior on activeWorkspaceMargin {
             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
         }
-        Behavior on idx1 { // Leading anim
+        Behavior on idx1 {
             NumberAnimation {
                 duration: 100
                 easing.type: Easing.OutSine
             }
         }
-        Behavior on idx2 { // Following anim
+        Behavior on idx2 {
             NumberAnimation {
                 duration: 300
                 easing.type: Easing.OutSine
@@ -149,7 +139,6 @@ Item {
         }
     }
 
-    // Workspaces - numbers
     RowLayout {
         id: rowLayoutNumbers
         z: 3
@@ -175,7 +164,7 @@ Item {
                     property var biggestWindow: HyprlandData.biggestWindowForWorkspace(button.workspaceValue)
                     property var mainAppIconSource: Quickshell.iconPath(AppSearch.guessIcon(biggestWindow?.class), "image-missing")
 
-                    StyledText { // Workspace number text
+                    StyledText {
                         opacity: GlobalStates.workspaceShowNumbers
                             || ((Config.options?.bar.workspaces.alwaysShowNumbers && (!Config.options?.bar.workspaces.showAppIcons || !workspaceButtonBackground.biggestWindow || GlobalStates.workspaceShowNumbers))
                             || (GlobalStates.workspaceShowNumbers && !Config.options?.bar.workspaces.showAppIcons)
@@ -197,7 +186,7 @@ Item {
                             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                         }
                     }
-                    Rectangle { // Dot instead of ws number
+                    Rectangle {
                         id: wsDot
                         opacity: (Config.options?.bar.workspaces.alwaysShowNumbers
                             || GlobalStates.workspaceShowNumbers
@@ -217,7 +206,7 @@ Item {
                             animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
                         }
                     }
-                    Item { // Main app icon
+                    Item {
                         anchors.centerIn: parent
                         width: workspaceButtonWidth
                         height: workspaceButtonWidth
@@ -271,12 +260,7 @@ Item {
                         }
                     }
                 }
-                
-
             }
-
         }
-
     }
-
 }
