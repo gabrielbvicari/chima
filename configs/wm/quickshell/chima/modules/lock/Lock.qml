@@ -1,99 +1,70 @@
+pragma ComponentBehavior: Bound
 import qs
+import qs.services
 import qs.modules.common
 import qs.modules.common.functions
-import qs.modules.lock
+import qs.modules.common.panels.lock
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import Quickshell.Wayland
 import Quickshell.Hyprland
 
-Scope {
-	id: root
-	// This stores all the information shared between the lock surfaces on each screen.
-	// https://github.com/quickshell-mirror/quickshell-examples/tree/master/lockscreen
-	LockContext {
-		id: lockContext
+LockScreen {
+    id: root
 
-		onUnlocked: {
-			// Unlock the screen before exiting, or the compositor will display a
-			// fallback lock you can't interact with.
-			GlobalStates.screenLocked = false;
-		}
-	}
+    property var savedWorkspaces: ({})
 
-	WlSessionLock {
-		id: lock
-		locked: GlobalStates.screenLocked
+    Timer {
+        id: restoreTimer
+        interval: 150
+        repeat: false
+        onTriggered: {
+            var batch = ""
+            for (var j = 0; j < Quickshell.screens.length; ++j) {
+                var monName = Quickshell.screens[j].name
+                var wsId = root.savedWorkspaces[monName]
+                if (wsId !== undefined) {
+                    batch += "dispatch focusmonitor " + monName + "; dispatch workspace " + wsId + "; "
+                }
+            }
+            if (batch.length > 0) {
+                Quickshell.execDetached(["hyprctl", "--batch", batch + "reload"])
+            }
+        }
+    }
 
-		WlSessionLockSurface {
-			color: "transparent"
-			Loader {
-				active: GlobalStates.screenLocked
-				anchors.fill: parent
-				opacity: active ? 1 : 0
-				Behavior on opacity {
-					animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
-				}
-				sourceComponent: LockSurface {
-					context: lockContext
-				}
-			}
-		}
-	}
+    lockSurface: LockSurface {
+        context: root.context
+    }
 
-	// Blur layer hack
-	Variants {
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked) {
+                var next = {}
+                var batch = "keyword animation workspaces,1,7,menu_decel,slidevert; "
+                for (var i = 0; i < Quickshell.screens.length; ++i) {
+                    var mon = Quickshell.screens[i].name
+                    var mData = HyprlandData.monitors.find(m => m.name === mon)
+                    var ws = (mData?.activeWorkspace?.id ?? 1)
+                    next[mon] = ws
+                    batch += "dispatch focusmonitor " + mon + "; dispatch workspace " + (2147483647 - ws) + "; "
+                }
+                root.savedWorkspaces = next
+                Quickshell.execDetached(["hyprctl", "--batch", batch + "reload"])
+            } else {
+                restoreTimer.start()
+            }
+        }
+    }
+
+    Variants {
         model: Quickshell.screens
-
-        LazyLoader {
-			id: blurLayerLoader
-			required property var modelData
-			active: GlobalStates.screenLocked
-			component: PanelWindow {
-				screen: blurLayerLoader.modelData
-				WlrLayershell.namespace: "quickshell:lockWindowPusher"
-				color: "transparent"
-				anchors {
-					top: true
-					left: true
-					right: true
-				}
-				// implicitHeight: lockContext.currentText == "" ? 1 : screen.height
-				implicitHeight: 1
-				exclusiveZone: screen.height * 3 // For some reason if we don't multiply by some number it would look really weird
-			}
-		}
-	}
-
-	IpcHandler {
-        target: "lock"
-
-        function activate(): void {
-            GlobalStates.screenLocked = true;
-        }
-		function focus(): void {
-			lockContext.shouldReFocus();
-		}
-    }
-
-	GlobalShortcut {
-        name: "lock"
-        description: "Locks the screen"
-
-        onPressed: {
-            GlobalStates.screenLocked = true;
-        }
-    }
-
-	GlobalShortcut {
-        name: "lockFocus"
-        description: "Re-focuses the lock screen. This is because Hyprland after waking up for whatever reason"
-			+ "decides to keyboard-unfocus the lock screen"
-
-        onPressed: {
-			// console.log("I BEG FOR PLEAS REFOCUZ")
-            lockContext.shouldReFocus();
+        delegate: Scope {
+            required property ShellScreen modelData
+            property bool shouldPush: GlobalStates.screenLocked
+            property string targetMonitorName: modelData.name
+            property int verticalMovementDistance: modelData.height
+            property int horizontalSqueeze: modelData.width * 0.2
         }
     }
 }
