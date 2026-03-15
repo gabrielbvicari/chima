@@ -92,12 +92,21 @@ WM_BACKLIGHT_PACKAGES=(
 
 # Chima screencapture dependencies:
 WM_SCREENCAPTURE_PACKAGES=(
+    "ffmpeg"
     "hyprshot"
+    "imagemagick"
     "slurp"
     "swappy"
     "tesseract"
     "tesseract-data-eng"
     "wf-recorder"
+)
+
+# Chima misc service dependencies:
+WM_SERVICE_PACKAGES=(
+    "fprintd"
+    "libqalculate"
+    "pacman-contrib"
 )
 
 # Chima toolkit dependencies:
@@ -265,6 +274,8 @@ AUR_CRITICAL_PACKAGES=(
     "quickshell-git"
     "sddm-silent-theme"
     "matugen-bin"
+    "satty"
+    "songrec"
 )
 
 AUR_FONT_PACKAGES=(
@@ -352,6 +363,7 @@ ALL_OFFICIAL_PACKAGES=(
     "${WM_AUDIO_PACKAGES[@]}"
     "${WM_BACKLIGHT_PACKAGES[@]}"
     "${WM_SCREENCAPTURE_PACKAGES[@]}"
+    "${WM_SERVICE_PACKAGES[@]}"
     "${WM_TOOLKIT_PACKAGES[@]}"
     "${WM_WIDGETS_PACKAGES[@]}"
     "${WM_PORTAL_PACKAGES[@]}"

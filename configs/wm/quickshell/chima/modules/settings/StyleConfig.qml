@@ -16,7 +16,6 @@ ContentPage {
     ContentSection {
         title: Translation.tr("Colors & Wallpaper")
 
-        // Light/Dark mode preference
         ButtonGroup {
             id: lightDarkButtonGroup
             Layout.fillWidth: true
@@ -28,7 +27,6 @@ ContentPage {
             }
         }
 
-        // Material palette selection
         ContentSubsection {
             title: Translation.tr("Material Palette")
             ConfigSelectionArray {
@@ -52,7 +50,6 @@ ContentPage {
             }
         }
 
-        // Color generation from wallpaper
         ContentSubsection {
             title: Translation.tr("Color Generation")
 
@@ -88,7 +85,6 @@ ContentPage {
             }
         }
 
-        // Wallpaper selection
         ContentSubsection {
             title: Translation.tr("Wallpaper")
 
@@ -159,9 +155,9 @@ ContentPage {
             ConfigRow {
                 ConfigSwitch {
                     text: Translation.tr("Enable")
-                    checked: Config.options.appearance.transparency
+                    checked: Config.options.appearance.transparency.enable
                     onCheckedChanged: {
-                        Config.options.appearance.transparency = checked;
+                        Config.options.appearance.transparency.enable = checked;
                     }
                 }
             }
